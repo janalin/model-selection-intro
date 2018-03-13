@@ -17,7 +17,7 @@ plot.model <- function(df, model, title, idx){
 }
 
 # generate data
-set.seed(123)
+#set.seed(123)
 df <- tibble::tibble(x = seq(20), y = jitter(2 * x ^ 2, amount = 60))
 # fit different models
 model <- vector(mode="list", length=3)
