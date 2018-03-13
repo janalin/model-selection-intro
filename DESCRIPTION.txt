@@ -1,0 +1,5 @@
+Type: Book/html
+Title: Model selection notes
+Version: 0.0.1
+Imports: bookdown
+Remotes:

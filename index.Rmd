@@ -1,0 +1,81 @@
+---
+title: "Introduction to Model
+Selection"
+date: '`r paste("Last update:", format(Sys.Date(), "%B %d, %Y"))`'
+site: bookdown::bookdown_site
+output: bookdown::gitbook
+documentclass: book
+bibliography: [book.bib, packages.bib]
+biblio-style: apalike
+link-citations: yes
+github-repo: janalin/model-selection-intro
+description: ""
+---
+
+bookdown::render_book('model-selection.Rmd')
+
+# Preface {-}
+
+The purpose of this document is to summarise the concepts discussed in the __model selection reading club__ -- taking place in the Computational Systems Biology group at the D-BSSE (ETH Zurich) in Winter/Spring 2018.
+
+The reading club is split into two groups:
+
+* One group covers the __introduction__ into the topic and discusses the commonly used selection criteria ___Akaike Information Criteria___ (__AIC__) and ___Bayesian Information Criteria___ (__BIC__).
+* The second group discusses their extensions for __mixed-effects models__.
+
+
+This document summerises the topics of both groups.
+
+The current structure of the document is shown below but might change during the course of the reading club.
+
+
+## Outline {-}
+
+* Introduction
+
+* The Bias-Variance Tradeoff
+
+* Model Selection Criteria
+    * In general
+    * For Linear Mixed Models (LMEs)
+    * For Non-Linear Mixed Models (NLMEs)
+
+
+
+```{r include=FALSE}
+packages <- c('bookdown', 'knitr', 'rmarkdown', 'ggplot2', 'cowplot',
+              'tibble', 'dplyr', 'purrr')
+
+# automatically create a bib database for R packages
+knitr::write_bib(c(
+  .packages(),
+  packages
+), 'packages.bib')
+
+# load R packages
+base::lapply(packages, require, character.only = TRUE)
+
+# define plot theme
+
+theme_book <- function(legend_pos = "bottom"){
+  theme(legend.position = legend_pos,
+        strip.background = element_rect(fill = "white"),
+        strip.text = element_text(size = 20),
+        legend.direction = "vertical",
+        legend.text = element_text(size = 20),
+        legend.title = element_blank(),
+        legend.key = element_rect(size = 7),
+        legend.key.size = unit(2, 'lines'),
+        axis.line = element_blank(),
+        plot.title = element_text(size = 24, face = 'bold',
+                                  hjust = 0.1, vjust = 0.2),
+        axis.text = element_text(size = 22),
+        axis.title.x = element_text(size = 22, face = 'bold',
+                                    margin = margin(t = 20, r = 0, b = 0, l = 0)),
+        axis.title.y = element_text(size = 22, face = 'bold',
+                                    margin = margin(t = 0, r = 20, b = 0, l = 0)),
+        )
+    }
+
+
+```

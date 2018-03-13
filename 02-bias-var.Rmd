@@ -1,0 +1,103 @@
+# The Bias-Variance Tradeoff {#bias-var}
+
+## Mean squared error
+Quality of fit means usually how well our model matches the experimental observations. Or more precisely, how much the predicted response value for a given observation is close to the true response value for that observation. The $SSE$ introduced in the previous section is not applicable as it is sample size dependent. The most-commonly used measure in regression is the _mean squared error_ ($MSE$), given by:
+
+$$MSE = \dfrac{1}{n} \sum_{i = 1}^n (y_i - f(x_i))^2 ,$$
+
+## Simulation study
+We consider the three models given in the introduction. We can compute the $MSE$ for the given data in the introduction.
+
+```{r 02-sum-stat_tab, tidy = FALSE, echo = TRUE}
+get.statinfo <- function(m, title, idx) {
+  tibble(
+    model = title[idx],
+    k = length(m[[idx]]$coefficients),
+    n = nobs(m[[idx]]),
+    df = df.residual(m[[idx]]), # n - k
+    SSE = round(sum(m[[idx]]$residuals ^ 2), 0),
+    MSE = round((sum(m[[idx]]$residuals ^ 2)) / nobs(m[[idx]]), 0)
+  )
+}
+
+statinfo <- purrr::map(seq(3), .f = function(.) get.statinfo(model, title, .)) %>%
+  do.call("rbind", .)
+
+knitr::kable(
+  statinfo, 
+  caption = 'Summary statistics for the three example models and the training data.',
+  booktabs = TRUE
+)
+```
+
+However, to asses the model performance, we are not interested in the quality of fit of the training data, _i. e._ the _training_ $MSE$. Instead, we are interested in how well our model performs on new observations -- the _test_ $MSE$. Let us compute the test $MSE$ of the three example models for 1000 new observations:
+
+```{r 02-test-MSE, echo = TRUE, fig.show = 'hold', fig.cap='Comparison of test MSEs for the three example models; computed on 1000 new data sets.', out.width='50%', fig.asp=.75, fig.align='left'}
+.compute.test.MSE <- function(m, seed, idx){
+  set.seed(seed)
+  test.df <- tibble::tibble(x = seq(20), y = jitter(2 * x ^ 2, amount = 60))
+  pred.y <- c(predict.lm(m[[idx]], test.df))
+  test.MSE <- mean((test.df$y - pred.y) ^ 2)
+  return(test.MSE)
+}
+
+test.MSEs <- purrr::map(
+  seq(3),
+  .f = function(.) lapply(seq(1000), function(x) .compute.test.MSE(model, x, .)) %>%
+    do.call("rbind", .)
+  )
+
+plot.hist <- function(test.MSEs, title, idx){
+  ggplot2::ggplot() + 
+    geom_histogram(aes(x = test.MSEs[[idx]]), color = 'black', fill = 'white', bins = 20) + 
+    theme_book() +
+    labs(title = title[idx], x = "Test MSE", y = "Count") + 
+    geom_vline(xintercept = median(test.MSE[[idx]]), lty = 3, color = 'red', lwd = 1.2)
+}
+
+hist.MSE <- purrr::map(
+  seq(3),
+  .f = function(.) plot.hist(test.MSEs, title, .)
+  )
+
+invisible(lapply(hist.MSE, function(x) show(x)))
+```
+
+As expected, while the polynomial of degree 15 has the best training $MSE$, it has the worse test $MSE$ -- which means this model is overfitting the data. The quadratic model (which we know is the true model) shows almost the same training and test $MSE$. 
+
+
+```{r 02-compare-MSE, echo = FALSE, warning = FALSE, fig.cap='Training MSE (triangles) and test MSE (circles) for the three example models.', out.width='80%', fig.asp=0.9, fig.align='center'}
+statinfo$test.MSE <- purrr::map(
+  seq(3),
+  .f = function(.) round(median(test.MSEs[[.]]), 0)) %>%
+    do.call("rbind", .)
+
+statinfo.tidy <- statinfo %>%
+  tidyr::gather(MSE.type, MSE.val, MSE:test.MSE) 
+
+statinfo.tidy$MSE.type <- gsub("^MSE", "training.MSE", statinfo.tidy$MSE.type)
+  
+ggplot(statinfo.tidy, aes(x = k, y = MSE.val, group = MSE.type)) + 
+  geom_line(alpha = 0.2) + 
+  scale_shape_discrete(solid=F) +
+  geom_point(aes(color = model, shape = MSE.type), size = 5, stroke = 1) +
+  labs(x = 'Number of parameters', y = 'MSE', title = '') + 
+  theme_book() 
+```
+
+## Error decomposition
+Assume we know the real model $f$ that gives rise to some real observations $y$ for values $x$ described by $y = f(x) + \epsilon$, with random noise $\epsilon \sim \mathcal{N}(0, \sigma^2)$. 
+
+We are interested in the quality of fit for a given model $\hat{f}$. It can be shown, that the expected test $MSE$ for $\hat{f}(x_i)$ can always be decomposed into the sum of the following three components: 
+$$ E \left( f(x_i) - \hat{f}(x_i) \right)^2 = \mathrm{Var}(\hat{f}(x_i)) + \left( \mathrm{Bias} (\hat{f}(x_i)) \right)^2 + \mathrm{Var}(\epsilon)$$
+
+1. **Variance of the fitted model**: $\mathrm{Var}(\hat{f}(x_i)) = E(\hat{f}(x_i)^2) - E(\hat{f}(x_i))^2$
+    * The variance of $\hat{f}(x_i)$ refers to the amount by which model $\hat{f}$ would change, if we estimated it using a different training data set (changes in estimated parameters); in general, more flexible models can result in large changes in $\hat{f}$.
+
+2. **Squared bias of the fitted model**: $\left( \mathrm{Bias} (\hat{f}(x_i)) \right)^2 = \left( E\left(\hat{f}(x_i)\right) - f(x_i) \right)^2$
+    * The squared bias of $\hat{f}(x_i)$.
+  
+3. **Variance due to measurement noise**: $\mathrm{Var}(\epsilon) = \sigma^2$
+    * The variance of the error terms, which is irreducible. 
+
+
