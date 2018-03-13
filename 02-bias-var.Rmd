@@ -66,7 +66,7 @@ invisible(lapply(hist.MSE, function(x) show(x)))
 As expected, while the polynomial of degree 15 has the best training $MSE$, it has the worse test $MSE$ -- which means this model is overfitting the data. The quadratic model (which we know is the true model) shows almost the same training and test $MSE$. 
 
 
-```{r 02-compare-MSE, echo = FALSE, warning = FALSE, fig.cap='Training MSE (triangles) and test MSE (circles) for the three example models.', out.width='80%', fig.asp=0.9, fig.align='center'}
+```{r 02-compare-MSE, echo = FALSE, warning = FALSE, fig.cap='Training MSE (triangles) and test MSE (circles) for the three example models.', out.width='70%', fig.asp=0.9, fig.align='center'}
 statinfo$test.MSE <- purrr::map(
   seq(3),
   .f = function(.) round(median(test.MSEs[[.]]), 0)) %>%
