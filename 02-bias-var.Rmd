@@ -66,7 +66,7 @@ invisible(lapply(hist.MSE, function(x) show(x)))
 As expected, while the polynomial of degree 15 has the best training $MSE$, it has the worse test $MSE$ -- which means this model is overfitting the data. The quadratic model (which we know is the true model) shows almost the same training and test $MSE$. 
 
 
-```{r 02-compare-MSE, echo = FALSE, warning = FALSE, fig.cap='Training MSE (triangles) and test MSE (circles) for the three example models.', out.width='70%', fig.asp=0.9, fig.align='center'}
+```{r 02-compare-MSE, echo = FALSE, warning = FALSE, fig.cap='Training MSE (triangles) and test MSE (circles) for the three example models.', out.width='50%', fig.asp=0.9, fig.align='center'}
 statinfo$test.MSE <- purrr::map(
   seq(3),
   .f = function(.) round(median(test.MSEs[[.]]), 0)) %>%
@@ -93,6 +93,45 @@ $$ E \left( f(x_i) - \hat{f}(x_i) \right)^2 = \mathrm{Var}(\hat{f}(x_i)) + \left
 
 1. **Variance of the fitted model**: $\mathrm{Var}(\hat{f}(x_i)) = E(\hat{f}(x_i)^2) - E(\hat{f}(x_i))^2$
     * The variance of $\hat{f}(x_i)$ refers to the amount by which model $\hat{f}$ would change, if we estimated it using a different training data set (changes in estimated parameters); in general, more flexible models can result in large changes in $\hat{f}$.
+
+
+```{r 02-model-var, echo = FALSE, fig.show = 'hold', warning = FALSE, fig.cap='Visualization of model variance: The example models were fitted to four different testing data sets.', out.width='50%', fig.asp=0.75, fig.align='left'}
+
+.fit.test <- function(m, seed, idx){
+  set.seed(seed)
+  test.df <- tibble::tibble(x = seq(20), y = jitter(2 * x ^ 2, amount = 60))
+  # fit different models
+  model <- vector(mode="list", length=3)
+  model[[1]] <-lm(y ~ x,  test.df)
+  model[[2]] <- lm(y ~ x + I(x ^ 2),  test.df)
+  model[[3]] <- lm(y ~ poly(x, 15),  test.df)
+  return(model)
+}
+
+new.fits <- purrr::map(
+  seq(3),
+  .f = function(.) lapply(seq(5), function(x) .fit.test(model, x, .)) 
+  )
+
+colorvec <- rainbow(10)
+
+plot.new.fits <- function(df, model, title, m.idx){
+  p <- ggplot2::ggplot(df, aes(x,y)) +
+    geom_point() +
+    theme_book() +
+    ggtitle(title[m.idx]) +
+    geom_line(data = fortify(new.fits[[2]][[1]][[m.idx]]), aes(x=seq(20), y=.fitted), color = colorvec[1], alpha = 0.8, lwd = 1.2) +
+     geom_line(data = fortify(new.fits[[2]][[2]][[m.idx]]), aes(x=seq(20), y=.fitted), color = colorvec[10], alpha = 0.8, lwd = 1.2) +
+     geom_line(data = fortify(new.fits[[2]][[3]][[m.idx]]), aes(x=seq(20), y=.fitted), color = colorvec[5], alpha = 0.8, lwd = 1.2) + 
+     geom_line(data = fortify(new.fits[[2]][[4]][[m.idx]]), aes(x=seq(20), y=.fitted), color = colorvec[8], alpha = 0.8, lwd = 1.2)
+}
+
+show(plot.new.fits(df, model, title, 1))
+show(plot.new.fits(df, model, title, 2))
+show(plot.new.fits(df, model, title, 3))
+
+
+```
 
 2. **Squared bias of the fitted model**: $\left( \mathrm{Bias} (\hat{f}(x_i)) \right)^2 = \left( E\left(\hat{f}(x_i)\right) - f(x_i) \right)^2$
     * The squared bias of $\hat{f}(x_i)$.
