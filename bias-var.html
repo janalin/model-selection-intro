@@ -174,24 +174,24 @@ knitr::<span class="kw">kable</span>(
 <td align="right">2</td>
 <td align="right">20</td>
 <td align="right">18</td>
-<td align="right">89005</td>
-<td align="right">4450</td>
+<td align="right">112222</td>
+<td align="right">5611</td>
 </tr>
 <tr class="even">
 <td align="left">Quadratic model</td>
 <td align="right">3</td>
 <td align="right">20</td>
 <td align="right">17</td>
-<td align="right">26197</td>
-<td align="right">1310</td>
+<td align="right">22091</td>
+<td align="right">1105</td>
 </tr>
 <tr class="odd">
 <td align="left">Polynomial of degree 15</td>
 <td align="right">16</td>
 <td align="right">20</td>
 <td align="right">4</td>
-<td align="right">8700</td>
-<td align="right">435</td>
+<td align="right">8456</td>
+<td align="right">423</td>
 </tr>
 </tbody>
 </table>
@@ -232,7 +232,7 @@ Figure 2.1: Comparison of test MSEs for the three example models; computed on 10
 </div>
 <p>As expected, while the polynomial of degree 15 has the best training <span class="math inline">\(MSE\)</span>, it has the worse test <span class="math inline">\(MSE\)</span> – which means this model is overfitting the data. The quadratic model (which we know is the true model) shows almost the same training and test <span class="math inline">\(MSE\)</span>.</p>
 <div class="figure" style="text-align: center"><span id="fig:02-compare-MSE"></span>
-<img src="model-selection_files/figure-html/02-compare-MSE-1.png" alt="Training MSE (triangles) and test MSE (circles) for the three example models." width="80%" />
+<img src="model-selection_files/figure-html/02-compare-MSE-1.png" alt="Training MSE (triangles) and test MSE (circles) for the three example models." width="50%" />
 <p class="caption">
 Figure 2.2: Training MSE (triangles) and test MSE (circles) for the three example models.
 </p>
@@ -247,6 +247,14 @@ Figure 2.2: Training MSE (triangles) and test MSE (circles) for the three exampl
 <ul>
 <li>The variance of <span class="math inline">\(\hat{f}(x_i)\)</span> refers to the amount by which model <span class="math inline">\(\hat{f}\)</span> would change, if we estimated it using a different training data set (changes in estimated parameters); in general, more flexible models can result in large changes in <span class="math inline">\(\hat{f}\)</span>.</li>
 </ul></li>
+</ol>
+<div class="figure" style="text-align: left"><span id="fig:02-model-var"></span>
+<img src="model-selection_files/figure-html/02-model-var-1.png" alt="Visualization of model variance: The example models were fitted to four different testing data sets." width="50%" /><img src="model-selection_files/figure-html/02-model-var-2.png" alt="Visualization of model variance: The example models were fitted to four different testing data sets." width="50%" /><img src="model-selection_files/figure-html/02-model-var-3.png" alt="Visualization of model variance: The example models were fitted to four different testing data sets." width="50%" />
+<p class="caption">
+Figure 2.3: Visualization of model variance: The example models were fitted to four different testing data sets.
+</p>
+</div>
+<ol start="2" style="list-style-type: decimal">
 <li><strong>Squared bias of the fitted model</strong>: <span class="math inline">\(\left( \mathrm{Bias} (\hat{f}(x_i)) \right)^2 = \left( E\left(\hat{f}(x_i)\right) - f(x_i) \right)^2\)</span>
 <ul>
 <li>The squared bias of <span class="math inline">\(\hat{f}(x_i)\)</span>.</li>
