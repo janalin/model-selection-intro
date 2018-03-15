@@ -1,5 +1,7 @@
-book_filename: "model-selection"
+book_filename: "model-selection-intro"
 language:
   ui:
     chapter_name: ""
 delete_merged_file: true
+#rmd_files:
+#  html: ["index.Rmd", "01-intro.Rmd", "02-bias-var.Rmd"]

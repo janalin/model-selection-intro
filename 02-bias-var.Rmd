@@ -1,102 +1,144 @@
 # The Bias-Variance Tradeoff {#bias-var}
 
-## Mean squared error
-Quality of fit means usually how well our model matches the experimental observations. Or more precisely, how much the predicted response value for a given observation is close to the true response value for that observation. The $SSE$ introduced in the previous section is not applicable as it is sample size dependent. The most-commonly used measure in regression is the _mean squared error_ ($MSE$), given by:
+## The quality of fit in regression
+Quality of fit means usually how well our model $\hat{f}$ matches the experimental observations $y$. Or more precisely, how much the predicted response value for a given observation $\hat{f}(x_i) = \hat{y}_i$ is close to the observed response value $y(x_i)$ for that observation $x_i$. The $SSE$ introduced in the previous section is not applicable because it is sample size dependent: as more observations we have, as higher the $SSE$. Thus, we need to normalize for the number of observation $n$. This gives us the most-commonly used measure for the quality of fit in regression analysis --  the _mean squared error_ $MSE$:
 
-$$MSE = \dfrac{1}{n} \sum_{i = 1}^n (y_i - f(x_i))^2 ,$$
+$$MSE = \dfrac{1}{n} \sum_{i = 1}^n \left( y(x_i) - \hat{f}(x_i) \right) ^ 2 = \dfrac{1}{n} SSE \ , $$
+The MSE is the total mean error between our actual observations and model prediction. In the following section, we will see that there are different error sources that contribute to the total error ($SSE$ and $MSE$). 
 
 ## Simulation study
-We consider the three models given in the introduction. We can compute the $MSE$ for the given data in the introduction.
+We perform a simulation study with the 4 example models introduced in the previous section @(intro).
 
-```{r 02-sum-stat_tab, tidy = FALSE, echo = TRUE}
-get.statinfo <- function(m, title, idx) {
+\begin{align}
+\hat{f}_1 (x) &= \beta_0 + \beta_1 \ x &\text{(Linear model)} \\
+\hat{f}_2 (x) &= \beta_0 + \beta_1 \ x + \beta_2 \ x^2 &\text{(Quadratic model)} \\
+\hat{f}_3 (x) &= \beta_0 + \beta_1 \ x + \beta_2 \ x^2 + \ldots + \beta_{16} \ x^{15} & \text{(Polynomial of degree 15)} \\
+\hat{f}_4 (x) &= \beta_0 + \beta_1 \ exp(x) & \text{(Exponential model)} \\
+\end{align}
+
+All models share the same vector of independent variables $x$. The parameter spaces of $\hat{f}_1$ and $\hat{f}_4$ are strict subsets of the parameter space of $\hat{f}_2$; and the parameter space of $\hat{f}_2$ is a strict subset of $\hat{f}_3$. But while model $\hat{f}_{3}$ can include models $\hat{f}_{i<3}$ (and $\hat{f}_{2}$ can include  $\hat{f}_{1}$), model $\hat{f}_4$ belongs to a different category. We will see why this is important.  
+
+Assume you have a set of observations $y$ from given by some data-generating process for given values of $x$. For instance, $x$ might be a set of experimental conditions or a set of patient biomarkers. Then $y$ might correspond to a fluorescence signal under the condition $x$ or a disease outcome in the considered patient population. Note, that you do not observe the full population from which $y$ is drawn but only a sample; performing another experiment under conditions $x$ or collecting more patient samples for the considered patient population corresponds ideally to taking a new random sample from the same population. We try to design our experiments and studies such that we can assume that this is the case, otherwise we cannot use the discussed model selection criteria, because then we cannot assume that the observations come from the same data-generating process and thus can be explained by the same model $\hat{f}$.
+
+We assume there is some _real_ unknown model $f$ that gives rise to our observations $y$:
+$$ y =  f(x) + \epsilon, \quad \epsilon \sim \mathcal{N}(0, \sigma^2) $$
+
+If we fit the four models to our available obseravtions $y$, we get the following quality of fit:
+
+```{r 02-get-statinfo, tidy = FALSE, eval = TRUE}
+get.statinfo <- function(model, model.title, idx) {
   tibble(
-    model = title[idx],
-    k = length(m[[idx]]$coefficients),
-    n = nobs(m[[idx]]),
-    df = df.residual(m[[idx]]), # n - k
-    SSE = round(sum(m[[idx]]$residuals ^ 2), 0),
-    MSE = round((sum(m[[idx]]$residuals ^ 2)) / nobs(m[[idx]]), 0)
+    Model = model.title[idx],
+    k = length(model[[idx]]$coefficients),
+    n = nobs(model[[idx]]),
+    df = df.residual(model[[idx]]), # n - k
+    SSE = round(sum(model[[idx]]$residuals ^ 2), 0),
+    MSE = round((sum(model[[idx]]$residuals ^ 2)) / nobs(model[[idx]]), 0)
   )
 }
 
-statinfo <- purrr::map(seq(3), .f = function(.) get.statinfo(model, title, .)) %>%
+statinfo <- purrr::map(
+  seq(4),
+  .f = function(.)
+    get.statinfo(model, model.title, .)
+) %>%
   do.call("rbind", .)
 
 knitr::kable(
-  statinfo, 
-  caption = 'Summary statistics for the three example models and the training data.',
+  statinfo,
+  caption = 'Summary statistics for fitting the four example models to the training data.',
   booktabs = TRUE
 )
 ```
 
-However, to asses the model performance, we are not interested in the quality of fit of the training data, _i. e._ the _training_ $MSE$. Instead, we are interested in how well our model performs on new observations -- the _test_ $MSE$. Let us compute the test $MSE$ of the three example models for 1000 new observations:
+The $MSE$ between model and training data is often called _training_ $MSE$. But to asses the model performance we are usually not interested in the _training_ $MSE$. Instead, we are interested in how well our model performs on new observations -- the _test_ $MSE$. Let us compute the test $MSE$ of the four example models for 1000 new observations, i.e. 1000 new samples drawn from the same population of observation as the training data set $y$.
 
-```{r 02-test-MSE, echo = TRUE, fig.show = 'hold', fig.cap='Comparison of test MSEs for the three example models; computed on 1000 new data sets.', out.width='50%', fig.asp=.75, fig.align='left'}
-.compute.test.MSE <- function(m, seed, idx){
+```{r 02-test-MSE, echo = TRUE,  tidy = FALSE, fig.show = 'hold', fig.cap='Comparison of test MSEs for the three example models; computed on 1000 new data sets.', out.width='50%', fig.asp=.75, fig.align='left'}
+.compute.test.MSE <- function(model, seed, idx) {
   set.seed(seed)
-  test.df <- tibble::tibble(x = seq(20), y = jitter(2 * x ^ 2, amount = 60))
-  pred.y <- c(predict.lm(m[[idx]], test.df))
-  test.MSE <- mean((test.df$y - pred.y) ^ 2)
+  test.data <- tibble::tibble(x = seq(20), 
+                              y = jitter(2 * x ^ 2, amount = 60))
+  pred.y <- c(predict.lm(model[[idx]], test.data))
+  test.MSE <- mean((test.data$y - pred.y) ^ 2)
   return(test.MSE)
 }
 
-test.MSEs <- purrr::map(
-  seq(3),
-  .f = function(.) lapply(seq(1000), function(x) .compute.test.MSE(model, x, .)) %>%
-    do.call("rbind", .)
-  )
+n.obs <- 1000 # number of new observations
+test.MSE <- purrr::map(
+  seq(4),
+  .f = function(.) lapply(seq(n.obs), function(x) .compute.test.MSE(model, x, .)) %>%
+      do.call("rbind", .)
+)
 
-plot.hist <- function(test.MSEs, title, idx){
-  ggplot2::ggplot() + 
-    geom_histogram(aes(x = test.MSEs[[idx]]), color = 'black', fill = 'white', bins = 20) + 
+plot.test.MSE <- function(test.MSE, model.title, idx) {
+  ggplot2::ggplot() +
+    geom_histogram(
+      aes(x = test.MSE[[idx]]), color = "black", fill = "white", bins = 20) +
     theme_book() +
-    labs(title = title[idx], x = "Test MSE", y = "Count") + 
-    geom_vline(xintercept = median(test.MSE[[idx]]), lty = 3, color = 'red', lwd = 1.2)
+    labs(title = model.title[idx], x = "Test MSE", y = "Frequency") +
+    geom_vline(
+      xintercept = median(test.MSE[[idx]]), lty = 3, color = "red", lwd = 1.2)
 }
 
 hist.MSE <- purrr::map(
-  seq(3),
-  .f = function(.) plot.hist(test.MSEs, title, .)
-  )
+  seq(4),
+  .f = function(.) plot.test.MSE(test.MSE, model.title, .)
+)
 
 invisible(lapply(hist.MSE, function(x) show(x)))
+
+# TODO: fit gaussian and estimate sigma**2
 ```
 
-As expected, while the polynomial of degree 15 has the best training $MSE$, it has the worse test $MSE$ -- which means this model is overfitting the data. The quadratic model (which we know is the true model) shows almost the same training and test $MSE$. 
+The dashed red line indicates the median. 
 
-
-```{r 02-compare-MSE, echo = FALSE, warning = FALSE, fig.cap='Training MSE (triangles) and test MSE (circles) for the three example models.', out.width='50%', fig.asp=0.9, fig.align='center'}
-statinfo$test.MSE <- purrr::map(
-  seq(3),
-  .f = function(.) round(median(test.MSEs[[.]]), 0)) %>%
+```{r 02-plot-MSEs, echo = FALSE, tidy=FALSE, warning = FALSE, fig.cap='Training MSE (triangles) and test MSE (circles) for the four example models.', fig.width=12, fig.height=6, out.width='100%', fig.align='center'}
+# add test.MSE to statinfo table
+test.MSE.r <- purrr::map(
+  seq(4),
+  .f = function(.) round(median(test.MSE[[.]]), 0)) %>%
     do.call("rbind", .)
 
-statinfo.tidy <- statinfo %>%
-  tidyr::gather(MSE.type, MSE.val, MSE:test.MSE) 
+statinfo$test.MSE <- test.MSE.r
 
+statinfo.tidy <- statinfo %>%
+  tidyr::gather(MSE.type, MSE.val, MSE, test.MSE)
+
+# rename MSE to training.MSE
 statinfo.tidy$MSE.type <- gsub("^MSE", "training.MSE", statinfo.tidy$MSE.type)
-  
-ggplot(statinfo.tidy, aes(x = k, y = MSE.val, group = MSE.type)) + 
-  geom_line(alpha = 0.2) + 
+
+ggplot2::ggplot(statinfo.tidy, aes(x = factor(k), y = MSE.val, group = MSE.type)) +
   scale_shape_discrete(solid=F) +
-  geom_point(aes(color = model, shape = MSE.type), size = 5, stroke = 1) +
-  labs(x = 'Number of parameters', y = 'MSE', title = '') + 
-  theme_book() 
+  geom_point(aes(color = Model, shape = MSE.type), size = 5, stroke = 2, alpha = 0.8) +
+  labs(x = 'Number of parameters', y = 'Average MSE', title = '') +
+  background_grid(major= "y", colour.major="grey40") +
+  scale_y_log10(
+    breaks = scales::trans_breaks("log10", function(x) 10^x),
+    labels = scales::trans_format("log10", scales::math_format(10^.x))) +
+  annotation_logticks(sides = 'lr') +
+  theme_book() + 
+  panel_border() + 
+  scale_color_brewer(palette = "Dark2")
+
+# TODO: show all MSEs, add boxplots
 ```
 
-## Error decomposition
-Assume we know the real model $f$ that gives rise to some real observations $y$ for values $x$ described by $y = f(x) + \epsilon$, with random noise $\epsilon \sim \mathcal{N}(0, \sigma^2)$. 
+The polynomial of degree 15 has the best _training_ $MSE$ but the worse _test_ $MSE$. This behavior is often called __overfitting__. In the next section we will show that this results from high __model variance__ (error due to __estimation__) and low __bias__ (error due to __approximation__). The linear model performs bad on both data sets. Note that the $MSE$ of the linear model does not change as as much as for $\hat{f}_3$ -- this indicates that the model variance of $\hat{f}_1$ is rather low and that the high $MSE$ results from high bias. The quadratic model performs well on both data sets suggesting a low model variance and a low bias. And indeed, this model was used to generate the data for this example. 
 
-We are interested in the quality of fit for a given model $\hat{f}$. It can be shown, that the expected test $MSE$ for $\hat{f}(x_i)$ can always be decomposed into the sum of the following three components: 
-$$ E \left( f(x_i) - \hat{f}(x_i) \right)^2 = \mathrm{Var}(\hat{f}(x_i)) + \left( \mathrm{Bias} (\hat{f}(x_i)) \right)^2 + \mathrm{Var}(\epsilon)$$
+## Error decomposition 
+
+_[work in progress]_
+
+Assume we know the real model $f$ that gives rise to some real observations $y$ for values $x$ described by $y = f(x) + \epsilon$, with random noise $\epsilon \sim \mathcal{N}(0, \sigma^2)$.
+
+We are interested in the quality of fit for a given model $\hat{f}$. It can be shown, that the expected test $MSE$ for $\hat{f}(x_i)$ can always be decomposed into the sum of the following three components:
+$$ E \left( y(x_i) - \hat{f}(x_i) \right)^2 = \mathrm{Var}(\hat{f}(x_i)) + \left( \mathrm{Bias} (\hat{f}(x_i)) \right)^2 + \mathrm{Var}(\epsilon)$$
 
 1. **Variance of the fitted model**: $\mathrm{Var}(\hat{f}(x_i)) = E(\hat{f}(x_i)^2) - E(\hat{f}(x_i))^2$
     * The variance of $\hat{f}(x_i)$ refers to the amount by which model $\hat{f}$ would change, if we estimated it using a different training data set (changes in estimated parameters); in general, more flexible models can result in large changes in $\hat{f}$.
 
 
-```{r 02-model-var, echo = FALSE, fig.show = 'hold', warning = FALSE, fig.cap='Visualization of model variance: The example models were fitted to four different testing data sets.', out.width='50%', fig.asp=0.75, fig.align='left'}
-
+```{r 02-model-var, eval=TRUE, tidy = FALSE, echo = FALSE, fig.show = 'hold', warning = FALSE, fig.cap='Visualization of model variance: The example models were fitted to four different testing data sets.', out.width='50%', fig.asp=0.75, fig.align='left'}
 .fit.test <- function(m, seed, idx){
   set.seed(seed)
   test.df <- tibble::tibble(x = seq(20), y = jitter(2 * x ^ 2, amount = 60))
@@ -105,12 +147,14 @@ $$ E \left( f(x_i) - \hat{f}(x_i) \right)^2 = \mathrm{Var}(\hat{f}(x_i)) + \left
   model[[1]] <-lm(y ~ x,  test.df)
   model[[2]] <- lm(y ~ x + I(x ^ 2),  test.df)
   model[[3]] <- lm(y ~ poly(x, 15),  test.df)
+  model[[4]] <- lm(y ~ exp(x),  test.df)
   return(model)
 }
 
+n.newfits <- 5
 new.fits <- purrr::map(
-  seq(3),
-  .f = function(.) lapply(seq(5), function(x) .fit.test(model, x, .)) 
+  seq(4),
+  .f = function(.) lapply(seq(n.newfits <- 5), function(x) .fit.test(model, x, .))
   )
 
 colorvec <- rainbow(10)
@@ -122,21 +166,18 @@ plot.new.fits <- function(df, model, title, m.idx){
     ggtitle(title[m.idx]) +
     geom_line(data = fortify(new.fits[[2]][[1]][[m.idx]]), aes(x=seq(20), y=.fitted), color = colorvec[1], alpha = 0.8, lwd = 1.2) +
      geom_line(data = fortify(new.fits[[2]][[2]][[m.idx]]), aes(x=seq(20), y=.fitted), color = colorvec[10], alpha = 0.8, lwd = 1.2) +
-     geom_line(data = fortify(new.fits[[2]][[3]][[m.idx]]), aes(x=seq(20), y=.fitted), color = colorvec[5], alpha = 0.8, lwd = 1.2) + 
+     geom_line(data = fortify(new.fits[[2]][[3]][[m.idx]]), aes(x=seq(20), y=.fitted), color = colorvec[5], alpha = 0.8, lwd = 1.2) +
      geom_line(data = fortify(new.fits[[2]][[4]][[m.idx]]), aes(x=seq(20), y=.fitted), color = colorvec[8], alpha = 0.8, lwd = 1.2)
 }
 
-show(plot.new.fits(df, model, title, 1))
-show(plot.new.fits(df, model, title, 2))
-show(plot.new.fits(df, model, title, 3))
-
-
+plots <- purrr::map(
+  seq(4),
+  .f = function(.) show(plot.new.fits(train.data, model, model.title, .))
+)
 ```
 
 2. **Squared bias of the fitted model**: $\left( \mathrm{Bias} (\hat{f}(x_i)) \right)^2 = \left( E\left(\hat{f}(x_i)\right) - f(x_i) \right)^2$
     * The squared bias of $\hat{f}(x_i)$.
-  
+
 3. **Variance due to measurement noise**: $\mathrm{Var}(\epsilon) = \sigma^2$
-    * The variance of the error terms, which is irreducible. 
-
-
+    * The variance of the error terms, which is irreducible.

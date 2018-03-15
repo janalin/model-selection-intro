@@ -1,7 +1,6 @@
 ---
-title: "Introduction to Model
-Selection"
-date: '`r paste("Last update:", format(Sys.Date(), "%B %d, %Y"))`'
+title: "Introduction to Model Selection"
+date: "" 
 site: bookdown::bookdown_site
 output: bookdown::gitbook
 documentclass: book
@@ -11,8 +10,6 @@ link-citations: yes
 github-repo: janalin/model-selection-intro
 description: ""
 ---
-
-bookdown::render_book('model-selection.Rmd')
 
 # Preface {-}
 
@@ -40,42 +37,43 @@ The current structure of the document is shown below but might change during the
     * For Linear Mixed Models (LMEs)
     * For Non-Linear Mixed Models (NLMEs)
 
-
-
-```{r include=FALSE}
-packages <- c('bookdown', 'knitr', 'rmarkdown', 'ggplot2', 'cowplot',
-              'tibble', 'dplyr', 'purrr')
+```{r 00-setup, include=FALSE}
+packages <- c(
+  "bookdown", "knitr", "rmarkdown", "ggplot2", "cowplot",
+  "tibble", "dplyr", "tidyr", "purrr")
 
 # automatically create a bib database for R packages
 knitr::write_bib(c(
   .packages(),
   packages
-), 'packages.bib')
+), "packages.bib")
 
 # load R packages
-base::lapply(packages, require, character.only = TRUE)
+base::lapply(packages, library, character.only = TRUE)
 
 # define plot theme
-
-theme_book <- function(legend_pos = "bottom"){
-  theme(legend.position = legend_pos,
-        strip.background = element_rect(fill = "white"),
-        strip.text = element_text(size = 20),
-        legend.direction = "vertical",
-        legend.text = element_text(size = 20),
-        legend.title = element_blank(),
-        legend.key = element_rect(size = 7),
-        legend.key.size = unit(2, 'lines'),
-        axis.line = element_blank(),
-        plot.title = element_text(size = 24, face = 'bold',
-                                  hjust = 0.1, vjust = 0.2),
-        axis.text = element_text(size = 22),
-        axis.title.x = element_text(size = 22, face = 'bold',
-                                    margin = margin(t = 20, r = 0, b = 0, l = 0)),
-        axis.title.y = element_text(size = 22, face = 'bold',
-                                    margin = margin(t = 0, r = 20, b = 0, l = 0)),
-        )
-    }
-
+theme_book <- function(legend_pos = "right") {
+  theme(
+    legend.position = legend_pos,
+    legend.direction = "vertical",
+    legend.text = element_text(size = 20),
+    legend.title = element_blank(),
+    legend.key = element_rect(size = 10),
+    legend.key.size = unit(2, "lines"),
+    strip.background = element_rect(fill = "white"),
+    strip.text = element_text(size = 20),
+    axis.line = element_blank(),
+    axis.text = element_text(size = 22),
+    plot.title = element_text(
+      size = 26, face = "bold",
+      hjust = 0.1, vjust = 0.2),
+    axis.title.x = element_text(
+      size = 24, face = "bold",
+      margin = margin(t = 20, r = 0, b = 0, l = 0)),
+    axis.title.y = element_text(
+      size = 24, face = "bold",
+      margin = margin(t = 0, r = 20, b = 0, l = 0))
+  )
+}
 
 ```

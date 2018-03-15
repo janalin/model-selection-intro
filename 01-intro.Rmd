@@ -1,0 +1,60 @@
+# Introduction {#intro}
+
+The goal of model selection is to identify the _best_ model among a set of competing models. What exactly means the best model? Usually, we consider the best model to be the _simplest_ of the _best fitting_ models, however, it is not exactly clear what the _simplest_ or the _best fitting_ model means. Consider for instance the following example:
+
+```{r 01-example-models, echo=FALSE, warning=FALSE, fig.show ='hold', fig.cap='Example problem: which model is the best model?', out.width='50%', fig.asp=.75, fig.align='left'}
+# Issue in formula(model): accepts only 'x' and 'y' as variable names -> restricts colnaming
+plot.model <- function(train.data, model, model.title, idx) {
+  SSE <- round(sum(model[[idx]]$residuals ^ 2), 0)
+  k <- length(model[[idx]]$coefficients)
+  p <- ggplot2::ggplot(
+    train.data, aes(x, y)) +
+    geom_point() +
+    theme_book() +
+    ggtitle(model.title[idx]) +
+    geom_smooth(formula = formula(model[[idx]]), method = "lm", se = FALSE) +
+    ylim(0, 800) + 
+    annotate(
+      "text", x = 4, y = 700,
+      label = paste("   SSE =", SSE, "\nk =", k), size = 7)
+  return(p)
+}
+
+# generate data
+set.seed(123)
+train.data <- tibble::tibble(x = seq(20), y = jitter(2 * x ^ 2, amount = 60))
+
+model.title <- c("Linear model", "Quadratic model", "Polynomial of degree 15", "Exponential model")
+
+# init list of models
+model <- vector(mode = "list", length = length(model.title))
+
+# fit models
+model[[1]] <- lm(y ~ x, train.data) # linear
+model[[2]] <- lm(y ~ x + I(x ^ 2), train.data) # quadratic
+model[[3]] <- lm(y ~ poly(x, 15), train.data) # polynom degree 15
+model[[4]] <- lm(y ~ exp(x), train.data) # exponential
+
+plots <- purrr::map(
+  seq(4),
+  .f = function(.) plot.model(train.data, model, model.title, .)
+)
+# do not show console output, only plots
+invisible(lapply(plots, function(x) show(x)))
+```
+
+Here, $k$ corresponds to the number of parameters (including the intercept). The sum over all squared residuals is given by $SSE$ (_sum of squared error_):
+
+$$SSE = \sum_{i = 1}^n \left( y(x_i) - \hat{f}(x_i) \right) ^ 2 = \sum_{i = 1}^n \underbrace{ \left(\underbrace{\underbrace{y_i}_{\text{observed}} - \underbrace{\hat{y}_i}_{\text{predicted}}}_{\text{residual } r_i}\right)^2}_{\text{squared error}}$$,
+
+where $n$ corresponds to the number of observations (here $n = 20$), $y_i$ is the observed response for given $x_i$ and $\hat{f}(x_i)$ is the predicted reponse of model $\hat{f}$ for a given $x_i$.
+
+Clearly, as more parameters the model has as better the model fits the data and as smaller is the sum of squared errors.
+
+But which of the three models is the best model? When does a better fit justifies more parameters or a more complex model?
+
+To answer this question, we first must decide on how to asses the quality of fit (is $SSE$ the appropriate?) and how to measure model complexity.
+
+How to asses the quality of fit is the topic of the next chapter. Model complexity might be covered in another chapter.
+
+

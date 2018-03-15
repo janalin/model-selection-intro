@@ -30,8 +30,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
   
   
-
-<link rel="next" href="intro.html">
+<link rel="prev" href="index.html">
+<link rel="next" href="bias-var.html">
 <script src="libs/jquery-2.2.3/jquery.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
 <link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
@@ -155,41 +155,31 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="header">
-<h1 class="title">Introduction to Model Selection</h1>
+<div id="intro" class="section level1">
+<h1><span class="header-section-number">1</span> Introduction</h1>
+<p>The goal of model selection is to identify the <em>best</em> model among a set of competing models. What exactly means the best model? Usually, we consider the best model to be the <em>simplest</em> of the <em>best fitting</em> models, however, it is not exactly clear what the <em>simplest</em> or the <em>best fitting</em> model means. Consider for instance the following example:</p>
+<div class="figure" style="text-align: left"><span id="fig:01-example-models"></span>
+<img src="model-selection-intro_files/figure-html4/01-example-models-1.png" alt="Example problem: which model is the best model?" width="50%" /><img src="model-selection-intro_files/figure-html4/01-example-models-2.png" alt="Example problem: which model is the best model?" width="50%" /><img src="model-selection-intro_files/figure-html4/01-example-models-3.png" alt="Example problem: which model is the best model?" width="50%" /><img src="model-selection-intro_files/figure-html4/01-example-models-4.png" alt="Example problem: which model is the best model?" width="50%" />
+<p class="caption">
+Figure 1.1: Example problem: which model is the best model?
+</p>
 </div>
-<div id="preface" class="section level1 unnumbered">
-<h1>Preface</h1>
-<p>The purpose of this document is to summarise the concepts discussed in the <strong>model selection reading club</strong> – taking place in the Computational Systems Biology group at the D-BSSE (ETH Zurich) in Winter/Spring 2018.</p>
-<p>The reading club is split into two groups:</p>
-<ul>
-<li>One group covers the <strong>introduction</strong> into the topic and discusses the commonly used selection criteria <strong><em>Akaike Information Criteria</em></strong> (<strong>AIC</strong>) and <strong><em>Bayesian Information Criteria</em></strong> (<strong>BIC</strong>).</li>
-<li>The second group discusses their extensions for <strong>mixed-effects models</strong>.</li>
-</ul>
-<p>This document summerises the topics of both groups.</p>
-<p>The current structure of the document is shown below but might change during the course of the reading club.</p>
-<div id="outline" class="section level2 unnumbered">
-<h2>Outline</h2>
-<ul>
-<li><p>Introduction</p></li>
-<li><p>The Bias-Variance Tradeoff</p></li>
-<li>Model Selection Criteria
-<ul>
-<li>In general</li>
-<li>For Linear Mixed Models (LMEs)</li>
-<li>For Non-Linear Mixed Models (NLMEs)</li>
-</ul></li>
-</ul>
+<p>Here, <span class="math inline">\(k\)</span> corresponds to the number of parameters (including the intercept). The sum over all squared residuals is given by <span class="math inline">\(SSE\)</span> (<em>sum of squared error</em>):</p>
+<p><span class="math display">\[SSE = \sum_{i = 1}^n \left( y(x_i) - \hat{f}(x_i) \right) ^ 2 = \sum_{i = 1}^n \underbrace{ \left(\underbrace{\underbrace{y_i}_{\text{observed}} - \underbrace{\hat{y}_i}_{\text{predicted}}}_{\text{residual } r_i}\right)^2}_{\text{squared error}}\]</span>,</p>
+<p>where <span class="math inline">\(n\)</span> corresponds to the number of observations (here <span class="math inline">\(n = 20\)</span>), <span class="math inline">\(y_i\)</span> is the observed response for given <span class="math inline">\(x_i\)</span> and <span class="math inline">\(\hat{f}(x_i)\)</span> is the predicted reponse of model <span class="math inline">\(\hat{f}\)</span> for a given <span class="math inline">\(x_i\)</span>.</p>
+<p>Clearly, as more parameters the model has as better the model fits the data and as smaller is the sum of squared errors.</p>
+<p>But which of the three models is the best model? When does a better fit justifies more parameters or a more complex model?</p>
+<p>To answer this question, we first must decide on how to asses the quality of fit (is <span class="math inline">\(SSE\)</span> the appropriate?) and how to measure model complexity.</p>
+<p>How to asses the quality of fit is the topic of the next chapter. Model complexity might be covered in another chapter.</p>
 
-</div>
 </div>
             </section>
 
           </div>
         </div>
       </div>
-
-<a href="intro.html" class="navigation navigation-next navigation-unique" aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+<a href="index.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="bias-var.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>
