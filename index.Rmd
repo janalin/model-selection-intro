@@ -68,10 +68,10 @@ theme_book <- function(legend_pos = "right") {
       size = 26, face = "bold",
       hjust = 0.1, vjust = 0.2),
     axis.title.x = element_text(
-      size = 24, face = "bold",
+      size = 24,
       margin = margin(t = 20, r = 0, b = 0, l = 0)),
     axis.title.y = element_text(
-      size = 24, face = "bold",
+      size = 24,
       margin = margin(t = 0, r = 20, b = 0, l = 0))
   )
 }
