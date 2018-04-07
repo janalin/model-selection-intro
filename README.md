@@ -27,6 +27,7 @@ Follow the documentation on <a href="https://github.com/rstudio/bookdown/blob/ma
 ```
 sh _build.sh
 ```
+
 ### Publish
 Before you push to git, copy all required files to the home directory by running:
 ```
