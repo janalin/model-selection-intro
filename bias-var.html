@@ -251,7 +251,7 @@ The MSE is the total mean error between our actual observations and model predic
 <p>The <span class="math inline">\(MSE\)</span> between model and training data is often called <em>training</em> <span class="math inline">\(MSE\)</span>. But to asses the model performance we are usually not interested in the <em>training</em> <span class="math inline">\(MSE\)</span>. Instead, we are interested in how well our model performs on new observations – the <em>test</em> <span class="math inline">\(MSE\)</span>. Let us compute the test <span class="math inline">\(MSE\)</span> of the four example models for 100 new observations. Here, a new observation means a new sample drawn from the same population of observations as the training data set <span class="math inline">\(y\)</span>.</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1">.compute.test.MSE &lt;-<span class="st"> </span><span class="cf">function</span>(model.list, seed, idx) {</a>
 <a class="sourceLine" id="cb2-2" data-line-number="2">  <span class="kw">set.seed</span>(seed)</a>
-<a class="sourceLine" id="cb2-3" data-line-number="3">  test.data &lt;-<span class="st"> </span>tibble<span class="op">::</span><span class="kw">tibble</span>(<span class="dt">x =</span> <span class="kw">seq</span>(<span class="dv">20</span>), </a>
+<a class="sourceLine" id="cb2-3" data-line-number="3">  test.data &lt;-<span class="st"> </span>tibble<span class="op">::</span><span class="kw">tibble</span>(<span class="dt">x =</span> <span class="kw">seq</span>(<span class="dv">20</span>),</a>
 <a class="sourceLine" id="cb2-4" data-line-number="4">                              <span class="dt">y =</span> <span class="kw">jitter</span>(<span class="dv">2</span> <span class="op">*</span><span class="st"> </span>x <span class="op">^</span><span class="st"> </span><span class="dv">2</span>, <span class="dt">amount =</span> <span class="dv">60</span>))</a>
 <a class="sourceLine" id="cb2-5" data-line-number="5">  pred.y &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="kw">predict.lm</span>(model.list[[idx]], test.data))</a>
 <a class="sourceLine" id="cb2-6" data-line-number="6">  test.MSE &lt;-<span class="st"> </span><span class="kw">round</span>(<span class="kw">mean</span>((test.data<span class="op">$</span>y <span class="op">-</span><span class="st"> </span>pred.y) <span class="op">^</span><span class="st"> </span><span class="dv">2</span>),<span class="dv">0</span>)</a>
@@ -262,11 +262,11 @@ The MSE is the total mean error between our actual observations and model predic
 <a class="sourceLine" id="cb2-11" data-line-number="11">n.obs &lt;-<span class="st"> </span><span class="dv">100</span></a>
 <a class="sourceLine" id="cb2-12" data-line-number="12">test.MSEs &lt;-<span class="st"> </span>purrr<span class="op">::</span><span class="kw">map</span>(</a>
 <a class="sourceLine" id="cb2-13" data-line-number="13">  <span class="kw">seq</span>(n.models),</a>
-<a class="sourceLine" id="cb2-14" data-line-number="14">  <span class="dt">.f =</span> <span class="cf">function</span>(.) <span class="kw">lapply</span>(<span class="kw">seq</span>(n.obs), </a>
+<a class="sourceLine" id="cb2-14" data-line-number="14">  <span class="dt">.f =</span> <span class="cf">function</span>(.) <span class="kw">lapply</span>(<span class="kw">seq</span>(n.obs),</a>
 <a class="sourceLine" id="cb2-15" data-line-number="15">       <span class="cf">function</span>(x) <span class="kw">.compute.test.MSE</span>(model.list, x, .)) <span class="op">%&gt;%</span></a>
 <a class="sourceLine" id="cb2-16" data-line-number="16"><span class="st">  </span><span class="kw">do.call</span>(<span class="st">&quot;rbind&quot;</span>, .)</a>
 <a class="sourceLine" id="cb2-17" data-line-number="17">)</a>
-<a class="sourceLine" id="cb2-18" data-line-number="18"><span class="co"># convert list to tibble </span></a>
+<a class="sourceLine" id="cb2-18" data-line-number="18"><span class="co"># convert list to tibble</span></a>
 <a class="sourceLine" id="cb2-19" data-line-number="19">df.test.MSEs &lt;-<span class="st"> </span>test.MSEs <span class="op">%&gt;%</span></a>
 <a class="sourceLine" id="cb2-20" data-line-number="20"><span class="st">  </span><span class="kw">do.call</span>(<span class="st">&quot;cbind&quot;</span>, .) <span class="op">%&gt;%</span></a>
 <a class="sourceLine" id="cb2-21" data-line-number="21"><span class="st">  </span>magrittr<span class="op">::</span><span class="kw">set_colnames</span>(model.titles) <span class="op">%&gt;%</span></a>
@@ -307,22 +307,22 @@ Figure 2.1: Histogram of test MSEs computed on 100 new observations.
 <a class="sourceLine" id="cb4-8" data-line-number="8">  <span class="kw">return</span>(new.fit)</a>
 <a class="sourceLine" id="cb4-9" data-line-number="9">}</a>
 <a class="sourceLine" id="cb4-10" data-line-number="10">.get.MSE &lt;-<span class="st"> </span><span class="cf">function</span>(list.of.fits, idx.fit, idx.model){</a>
-<a class="sourceLine" id="cb4-11" data-line-number="11">  MSE =<span class="st"> </span></a>
-<a class="sourceLine" id="cb4-12" data-line-number="12"><span class="st">    </span><span class="kw">round</span>((<span class="kw">sum</span>(list.of.fits[[idx.fit]][[idx.model]]<span class="op">$</span>residuals <span class="op">^</span><span class="st"> </span><span class="dv">2</span>)) <span class="op">/</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb4-11" data-line-number="11">  MSE =</a>
+<a class="sourceLine" id="cb4-12" data-line-number="12"><span class="st">    </span><span class="kw">round</span>((<span class="kw">sum</span>(list.of.fits[[idx.fit]][[idx.model]]<span class="op">$</span>residuals <span class="op">^</span><span class="st"> </span><span class="dv">2</span>)) <span class="op">/</span></a>
 <a class="sourceLine" id="cb4-13" data-line-number="13"><span class="st">    </span><span class="kw">nobs</span>(list.of.fits[[idx.fit]][[idx.model]]), <span class="dv">0</span>)</a>
 <a class="sourceLine" id="cb4-14" data-line-number="14">  <span class="kw">return</span>(MSE)</a>
 <a class="sourceLine" id="cb4-15" data-line-number="15">}</a>
 <a class="sourceLine" id="cb4-16" data-line-number="16"><span class="co"># fit models to new obserations and store in list</span></a>
-<a class="sourceLine" id="cb4-17" data-line-number="17">n.obs &lt;-<span class="st"> </span><span class="dv">100</span> <span class="co"># we fit the four models </span></a>
+<a class="sourceLine" id="cb4-17" data-line-number="17">n.obs &lt;-<span class="st"> </span><span class="dv">100</span> <span class="co"># we fit the four models</span></a>
 <a class="sourceLine" id="cb4-18" data-line-number="18">n.models &lt;-<span class="st"> </span><span class="dv">4</span></a>
 <a class="sourceLine" id="cb4-19" data-line-number="19">new.fits &lt;-<span class="st"> </span>purrr<span class="op">::</span><span class="kw">map</span>(</a>
-<a class="sourceLine" id="cb4-20" data-line-number="20">  <span class="kw">seq</span>(n.obs), </a>
+<a class="sourceLine" id="cb4-20" data-line-number="20">  <span class="kw">seq</span>(n.obs),</a>
 <a class="sourceLine" id="cb4-21" data-line-number="21">  <span class="dt">.f =</span> <span class="cf">function</span>(.) <span class="kw">.fit.new.obs</span>(model.list, .)</a>
 <a class="sourceLine" id="cb4-22" data-line-number="22">  )</a>
 <a class="sourceLine" id="cb4-23" data-line-number="23"><span class="co"># get new training MSEs</span></a>
 <a class="sourceLine" id="cb4-24" data-line-number="24">training.MSEs &lt;-<span class="st"> </span>purrr<span class="op">::</span><span class="kw">map</span>(</a>
 <a class="sourceLine" id="cb4-25" data-line-number="25">  <span class="kw">seq</span>(n.models),</a>
-<a class="sourceLine" id="cb4-26" data-line-number="26">  <span class="dt">.f =</span> <span class="cf">function</span>(.) <span class="kw">lapply</span>(<span class="kw">seq</span>(n.obs), </a>
+<a class="sourceLine" id="cb4-26" data-line-number="26">  <span class="dt">.f =</span> <span class="cf">function</span>(.) <span class="kw">lapply</span>(<span class="kw">seq</span>(n.obs),</a>
 <a class="sourceLine" id="cb4-27" data-line-number="27">       <span class="cf">function</span>(x) <span class="kw">.get.MSE</span>(new.fits, x, .)) <span class="op">%&gt;%</span></a>
 <a class="sourceLine" id="cb4-28" data-line-number="28"><span class="st">  </span><span class="kw">do.call</span>(<span class="st">&quot;rbind&quot;</span>, .)</a>
 <a class="sourceLine" id="cb4-29" data-line-number="29">)</a>
@@ -331,27 +331,27 @@ Figure 2.1: Histogram of test MSEs computed on 100 new observations.
 <a class="sourceLine" id="cb4-32" data-line-number="32"><span class="st">  </span><span class="kw">do.call</span>(<span class="st">&quot;cbind&quot;</span>, .) <span class="op">%&gt;%</span></a>
 <a class="sourceLine" id="cb4-33" data-line-number="33"><span class="st">  </span>magrittr<span class="op">::</span><span class="kw">set_colnames</span>(model.titles) <span class="op">%&gt;%</span></a>
 <a class="sourceLine" id="cb4-34" data-line-number="34"><span class="st">  </span><span class="kw">as.tibble</span>(.) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb4-35" data-line-number="35"><span class="st">  </span>dplyr<span class="op">::</span><span class="kw">mutate</span>(<span class="dt">Type =</span> <span class="st">&#39;training MSE&#39;</span>) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb4-35" data-line-number="35"><span class="st">  </span>dplyr<span class="op">::</span><span class="kw">mutate</span>(<span class="dt">Type =</span> <span class="st">&#39;Training MSE&#39;</span>) <span class="op">%&gt;%</span></a>
 <a class="sourceLine" id="cb4-36" data-line-number="36"><span class="st">  </span>dplyr<span class="op">::</span><span class="kw">bind_rows</span>(df.test.MSEs) <span class="op">%&gt;%</span></a>
 <a class="sourceLine" id="cb4-37" data-line-number="37"><span class="st">  </span>tidyr<span class="op">::</span><span class="kw">gather</span>(Model, MSE, <span class="op">-</span>Type)</a>
 <a class="sourceLine" id="cb4-38" data-line-number="38"><span class="co"># define order of models (how they should appear in plot)</span></a>
-<a class="sourceLine" id="cb4-39" data-line-number="39">df.MSEs<span class="op">$</span>Model &lt;-<span class="st"> </span><span class="kw">factor</span>(df.MSEs<span class="op">$</span>Model, </a>
+<a class="sourceLine" id="cb4-39" data-line-number="39">df.MSEs<span class="op">$</span>Model &lt;-<span class="st"> </span><span class="kw">factor</span>(df.MSEs<span class="op">$</span>Model,</a>
 <a class="sourceLine" id="cb4-40" data-line-number="40">  <span class="dt">levels=</span><span class="kw">c</span>(model.titles[<span class="kw">length</span>(model.titles)], model.titles[<span class="dv">1</span><span class="op">:</span><span class="kw">length</span>(model.titles)<span class="op">-</span><span class="dv">1</span>]))</a>
-<a class="sourceLine" id="cb4-41" data-line-number="41"><span class="co"># plot all training MSEs and test MSEs </span></a>
-<a class="sourceLine" id="cb4-42" data-line-number="42">ggplot2<span class="op">::</span><span class="kw">ggplot</span>(df.MSEs, </a>
+<a class="sourceLine" id="cb4-41" data-line-number="41"><span class="co"># plot all training MSEs and test MSEs</span></a>
+<a class="sourceLine" id="cb4-42" data-line-number="42">ggplot2<span class="op">::</span><span class="kw">ggplot</span>(df.MSEs,</a>
 <a class="sourceLine" id="cb4-43" data-line-number="43">                <span class="kw">aes</span>(<span class="dt">x =</span> <span class="kw">factor</span>(Model), <span class="dt">y =</span> MSE)) <span class="op">+</span></a>
 <a class="sourceLine" id="cb4-44" data-line-number="44"><span class="st">  </span><span class="kw">scale_shape_discrete</span>(<span class="dt">solid=</span>F) <span class="op">+</span></a>
-<a class="sourceLine" id="cb4-45" data-line-number="45"><span class="st">  </span><span class="kw">geom_point</span>(<span class="kw">aes</span>(<span class="dt">color =</span> Type), </a>
+<a class="sourceLine" id="cb4-45" data-line-number="45"><span class="st">  </span><span class="kw">geom_point</span>(<span class="kw">aes</span>(<span class="dt">color =</span> Type),</a>
 <a class="sourceLine" id="cb4-46" data-line-number="46">             <span class="dt">size =</span> <span class="dv">3</span>, <span class="dt">stroke =</span> <span class="dv">1</span>, <span class="dt">alpha =</span> <span class="fl">0.05</span>) <span class="op">+</span></a>
-<a class="sourceLine" id="cb4-47" data-line-number="47"><span class="st">  </span><span class="kw">geom_boxplot</span>(<span class="kw">aes</span>(<span class="dt">color=</span>Type), <span class="dt">width =</span> <span class="fl">0.5</span>) <span class="op">+</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb4-47" data-line-number="47"><span class="st">  </span><span class="kw">geom_boxplot</span>(<span class="kw">aes</span>(<span class="dt">color=</span>Type), <span class="dt">width =</span> <span class="fl">0.5</span>) <span class="op">+</span></a>
 <a class="sourceLine" id="cb4-48" data-line-number="48"><span class="st">  </span><span class="kw">labs</span>(<span class="dt">x =</span> <span class="st">&#39;Model&#39;</span>, <span class="dt">y =</span> <span class="st">&#39;MSE&#39;</span>, <span class="dt">title =</span> <span class="st">&#39;&#39;</span>) <span class="op">+</span></a>
 <a class="sourceLine" id="cb4-49" data-line-number="49"><span class="st">  </span><span class="kw">background_grid</span>(<span class="dt">major=</span> <span class="st">&quot;y&quot;</span>, <span class="dt">colour.major=</span><span class="st">&quot;grey40&quot;</span>) <span class="op">+</span></a>
 <a class="sourceLine" id="cb4-50" data-line-number="50"><span class="st">  </span><span class="kw">scale_y_log10</span>(</a>
 <a class="sourceLine" id="cb4-51" data-line-number="51">    <span class="dt">breaks =</span> scales<span class="op">::</span><span class="kw">trans_breaks</span>(<span class="st">&quot;log10&quot;</span>, <span class="cf">function</span>(x) <span class="dv">10</span><span class="op">^</span>x),</a>
 <a class="sourceLine" id="cb4-52" data-line-number="52">    <span class="dt">labels =</span> scales<span class="op">::</span><span class="kw">trans_format</span>(<span class="st">&quot;log10&quot;</span>, scales<span class="op">::</span><span class="kw">math_format</span>(<span class="dv">10</span><span class="op">^</span>.x))) <span class="op">+</span></a>
 <a class="sourceLine" id="cb4-53" data-line-number="53"><span class="st">  </span><span class="kw">annotation_logticks</span>(<span class="dt">sides =</span> <span class="st">&#39;lr&#39;</span>) <span class="op">+</span></a>
-<a class="sourceLine" id="cb4-54" data-line-number="54"><span class="st">  </span><span class="kw">theme_book</span>() <span class="op">+</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb4-55" data-line-number="55"><span class="st">  </span><span class="kw">panel_border</span>() <span class="op">+</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb4-54" data-line-number="54"><span class="st">  </span><span class="kw">theme_book</span>() <span class="op">+</span></a>
+<a class="sourceLine" id="cb4-55" data-line-number="55"><span class="st">  </span><span class="kw">panel_border</span>() <span class="op">+</span></a>
 <a class="sourceLine" id="cb4-56" data-line-number="56"><span class="st">  </span><span class="kw">scale_color_brewer</span>(<span class="dt">palette =</span> <span class="st">&quot;Set1&quot;</span>) <span class="op">+</span></a>
 <a class="sourceLine" id="cb4-57" data-line-number="57"><span class="st">  </span><span class="kw">scale_x_discrete</span>(<span class="dt">labels =</span> <span class="kw">c</span>(<span class="st">&quot;Exp.&quot;</span>, <span class="st">&quot;Linear&quot;</span>, <span class="st">&quot;Quadr.&quot;</span>, <span class="st">&quot;Polyn. 15&quot;</span>))</a></code></pre></div>
 <div class="figure" style="text-align: left"><span id="fig:02-comparison-MSE"></span>
