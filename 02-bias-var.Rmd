@@ -3,44 +3,44 @@
 ## The quality of fit in regression
 Quality of fit means usually how well our model $\hat{f}$ matches the experimental observations $y$. Or more precisely, how much the predicted response value for a given observation $\hat{f}(x_i) = \hat{y}_i$ is close to the observed response value $y(x_i)$ for that observation $x_i$. The $SSE$ introduced in the previous section is not applicable because it is sample size dependent: as more observations we have, as higher the $SSE$. Thus, we need to normalize for the number of observation $n$. This gives us the most-commonly used measure for the quality of fit in regression analysis --  the _mean squared error_ $MSE$:
 
-$$MSE = \dfrac{1}{n} \sum_{i = 1}^n \left( y(x_i) - \hat{f}(x_i) \right) ^ 2 = \dfrac{1}{n} SSE \ , $$
+$$MSE = \dfrac{1}{n} SSE = \dfrac{1}{n} \sum_{i = 1}^n \left( y(x_i) - \hat{f}(x_i) \right) ^ 2 = \dfrac{1}{n} \sum_{i = 1}^n \underbrace{ \left(\underbrace{\underbrace{y_i}_{\text{observed}} - \underbrace{\hat{y}_i}_{\text{predicted}}}_{\text{residual } r_i}\right)^2}_{\text{squared error}} \ , $$
 The MSE is the total mean error between our actual observations and model prediction. In the following section, we will see that there are different error sources that contribute to the total error ($SSE$ and $MSE$). 
 
 ## Simulation study
-We perform a simulation study with the 4 example models introduced in the previous section @(intro).
+We perform a simulation study with the four example models introduced in section \@ref(intro).
 
 \begin{align}
-\hat{f}_1 (x) &= \beta_0 + \beta_1 \ x &\text{(Linear model)} \\
-\hat{f}_2 (x) &= \beta_0 + \beta_1 \ x + \beta_2 \ x^2 &\text{(Quadratic model)} \\
-\hat{f}_3 (x) &= \beta_0 + \beta_1 \ x + \beta_2 \ x^2 + \ldots + \beta_{16} \ x^{15} & \text{(Polynomial of degree 15)} \\
-\hat{f}_4 (x) &= \beta_0 + \beta_1 \ exp(x) & \text{(Exponential model)} \\
+\hat{f}_1 (x) &= \beta_0 + \beta_1 \ x &\text{Polynomial of degree 1 (linear model)} \\
+\hat{f}_2 (x) &= \beta_0 + \beta_1 \ x + \beta_2 \ x^2 &\text{Polynomial of degree 2 (quadratic model)} \\
+\hat{f}_3 (x) &= \beta_0 + \beta_1 \ x + \beta_2 \ x^2 + \ldots + \beta_{16} \ x^{15} & \text{Polynomial of degree 15} \\
+\hat{f}_4 (x) &= \beta_0 + \beta_1 \ exp(x) & \text{Exponential model} \\
 \end{align}
 
-All models share the same vector of independent variables $x$. The parameter spaces of $\hat{f}_1$ and $\hat{f}_4$ are strict subsets of the parameter space of $\hat{f}_2$; and the parameter space of $\hat{f}_2$ is a strict subset of $\hat{f}_3$. But while model $\hat{f}_{3}$ can include models $\hat{f}_{i<3}$ (and $\hat{f}_{2}$ can include  $\hat{f}_{1}$), model $\hat{f}_4$ belongs to a different category. We will see why this is important.  
+All models share the same vector of independent variables $x$. Note, that model $\hat{f}_{3}$ can include models $\hat{f}_{i<3}$ (and $\hat{f}_{2}$ can include  $\hat{f}_{1}$), while model $\hat{f}_4$ belongs to a different category. We will see why this is important.
 
-Assume you have a set of observations $y$ from given by some data-generating process for given values of $x$. For instance, $x$ might be a set of experimental conditions or a set of patient biomarkers. Then $y$ might correspond to a fluorescence signal under the condition $x$ or a disease outcome in the considered patient population. Note, that you do not observe the full population from which $y$ is drawn but only a sample; performing another experiment under conditions $x$ or collecting more patient samples for the considered patient population corresponds ideally to taking a new random sample from the same population. We try to design our experiments and studies such that we can assume that this is the case, otherwise we cannot use the discussed model selection criteria, because then we cannot assume that the observations come from the same data-generating process and thus can be explained by the same model $\hat{f}$.
+Assume you have a set of observations $y$ given by some data-generating process for given values of $x$. For instance, $x$ might be a set of experimental conditions or a set of patient biomarkers. Then $y$ might correspond to a fluorescence signal under the condition $x$ or a disease outcome in the considered patient population. Note, that you do not observe the full population from which $y$ is drawn but only a sample; performing another experiment under conditions $x$ or collecting more patient samples for the considered patient population corresponds ideally to taking a new random sample from the same population. We try to design our experiments and studies such that we can assume that this is the case, otherwise we cannot use the discussed model selection criteria, because then we cannot assume that the observations come from the same data-generating process and then they can not be explained by the same model $\hat{f}$.
 
 We assume there is some _real_ unknown model $f$ that gives rise to our observations $y$:
 $$ y =  f(x) + \epsilon, \quad \epsilon \sim \mathcal{N}(0, \sigma^2) $$
 
-If we fit the four models to our available obseravtions $y$, we get the following quality of fit:
+We fit the four models to our available obseravtions $y$. The summary statistics is shown in Table below.
 
 ```{r 02-get-statinfo, tidy = FALSE, eval = TRUE}
-get.statinfo <- function(model, model.title, idx) {
+get.statinfo <- function(model.list, model.titles, idx) {
   tibble(
-    Model = model.title[idx],
-    k = length(model[[idx]]$coefficients),
-    n = nobs(model[[idx]]),
-    df = df.residual(model[[idx]]), # n - k
-    SSE = round(sum(model[[idx]]$residuals ^ 2), 0),
-    MSE = round((sum(model[[idx]]$residuals ^ 2)) / nobs(model[[idx]]), 0)
+    Model = model.titles[idx],
+    k = length(model.list[[idx]]$coefficients),
+    n = nobs(model.list[[idx]]),
+    df = df.residual(model.list[[idx]]), # n - k
+    SSE = round(sum(model.list[[idx]]$residuals ^ 2), 0),
+    MSE = round((sum(model.list[[idx]]$residuals ^ 2)) / nobs(model.list[[idx]]), 0)
   )
 }
 
 statinfo <- purrr::map(
   seq(4),
   .f = function(.)
-    get.statinfo(model, model.title, .)
+    get.statinfo(model.list, model.titles, .)
 ) %>%
   do.call("rbind", .)
 
@@ -51,66 +51,102 @@ knitr::kable(
 )
 ```
 
-The $MSE$ between model and training data is often called _training_ $MSE$. But to asses the model performance we are usually not interested in the _training_ $MSE$. Instead, we are interested in how well our model performs on new observations -- the _test_ $MSE$. Let us compute the test $MSE$ of the four example models for 1000 new observations, i.e. 1000 new samples drawn from the same population of observation as the training data set $y$.
+The $MSE$ between model and training data is often called _training_ $MSE$. But to asses the model performance we are usually not interested in the _training_ $MSE$. Instead, we are interested in how well our model performs on new observations -- the _test_ $MSE$. Let us compute the test $MSE$ of the four example models for 100 new observations. Here, a new observation means a new sample drawn from the same population of observations as the training data set $y$.
 
-```{r 02-test-MSE, echo = TRUE,  tidy = FALSE, fig.show = 'hold', fig.cap='Comparison of test MSEs for the three example models; computed on 1000 new data sets.', out.width='50%', fig.asp=.75, fig.align='left'}
-.compute.test.MSE <- function(model, seed, idx) {
+```{r 02-test-MSE, echo = TRUE, eval=TRUE, tidy = FALSE, fig.show = 'hold', fig.cap='Histogram of test MSEs computed on 100 new observations.', out.width='50%', fig.asp=.75, fig.align='left'}
+.compute.test.MSE <- function(model.list, seed, idx) {
   set.seed(seed)
   test.data <- tibble::tibble(x = seq(20), 
                               y = jitter(2 * x ^ 2, amount = 60))
-  pred.y <- c(predict.lm(model[[idx]], test.data))
-  test.MSE <- mean((test.data$y - pred.y) ^ 2)
+  pred.y <- c(predict.lm(model.list[[idx]], test.data))
+  test.MSE <- round(mean((test.data$y - pred.y) ^ 2),0)
   return(test.MSE)
 }
-
-n.obs <- 1000 # number of new observations
-test.MSE <- purrr::map(
-  seq(4),
-  .f = function(.) lapply(seq(n.obs), function(x) .compute.test.MSE(model, x, .)) %>%
-      do.call("rbind", .)
+# compute new test MSEs
+n.models <- 4
+n.obs <- 100
+test.MSEs <- purrr::map(
+  seq(n.models),
+  .f = function(.) lapply(seq(n.obs), 
+       function(x) .compute.test.MSE(model.list, x, .)) %>%
+  do.call("rbind", .)
 )
-
-plot.test.MSE <- function(test.MSE, model.title, idx) {
+# convert list to tibble 
+df.test.MSEs <- test.MSEs %>%
+  do.call("cbind", .) %>%
+  magrittr::set_colnames(model.titles) %>%
+  tibble::as.tibble(.) %>%
+  dplyr::mutate(Type = 'Test MSE')
+# plot results
+.plot.hist <- function(df, model.titles, idx.model) {
   ggplot2::ggplot() +
     geom_histogram(
-      aes(x = test.MSE[[idx]]), color = "black", fill = "white", bins = 20) +
+      aes(x = df[[idx.model]]), color = "black", fill = "white", bins = 20) +
     theme_book() +
-    labs(title = model.title[idx], x = "Test MSE", y = "Frequency") +
+    labs(title = model.titles[idx.model], x = df$Type, y = "Frequency") +
     geom_vline(
-      xintercept = median(test.MSE[[idx]]), lty = 3, color = "red", lwd = 1.2)
+      xintercept = median(df[[idx.model]]), lty = 3, color = "red", lwd = 1.2) +
+    ylim(0, 15)
 }
-
-hist.MSE <- purrr::map(
-  seq(4),
-  .f = function(.) plot.test.MSE(test.MSE, model.title, .)
+hist.MSEs <- purrr::map(
+  seq(n.models),
+  .f = function(.).plot.hist(df.test.MSEs, model.titles, .)
 )
-
-invisible(lapply(hist.MSE, function(x) show(x)))
-
-# TODO: fit gaussian and estimate sigma**2
+# show plots
+invisible(lapply(hist.MSEs, function(x) methods::show(x)))
 ```
 
-The dashed red line indicates the median. 
+Now, let us compute the __training__ $MSE$ for 100 new observations and compare it to the __test__ $MSE$.
 
-```{r 02-plot-MSEs, echo = FALSE, tidy=FALSE, warning = FALSE, fig.cap='Training MSE (triangles) and test MSE (circles) for the four example models.', fig.width=12, fig.height=6, out.width='100%', fig.align='center'}
-# add test.MSE to statinfo table
-test.MSE.r <- purrr::map(
-  seq(4),
-  .f = function(.) round(median(test.MSE[[.]]), 0)) %>%
-    do.call("rbind", .)
-
-statinfo$test.MSE <- test.MSE.r
-
-statinfo.tidy <- statinfo %>%
-  tidyr::gather(MSE.type, MSE.val, MSE, test.MSE)
-
-# rename MSE to training.MSE
-statinfo.tidy$MSE.type <- gsub("^MSE", "training.MSE", statinfo.tidy$MSE.type)
-
-ggplot2::ggplot(statinfo.tidy, aes(x = factor(k), y = MSE.val, group = MSE.type)) +
+```{r 02-comparison-MSE, echo = TRUE, eval=TRUE, tidy = FALSE, fig.show = 'hold', fig.cap='Comparison of training and test MSEs computed on 100 new data sets.', out.width='100%', fig.asp=.75, fig.align='left'}
+.fit.new.obs <- function(model.list, seed){
+  set.seed(seed)
+  test.data <- tibble::tibble(x = seq(20), y = jitter(2 * x ^ 2, amount = 60))
+  new.fit <- purrr::map(
+    seq(length(model.list)),
+    .f = function(.) lm(formula(model.list[[.]]), test.data)
+  )
+  return(new.fit)
+}
+.get.MSE <- function(list.of.fits, idx.fit, idx.model){
+  MSE = 
+    round((sum(list.of.fits[[idx.fit]][[idx.model]]$residuals ^ 2)) / 
+    nobs(list.of.fits[[idx.fit]][[idx.model]]), 0)
+  return(MSE)
+}
+# fit models to new obserations and store in list
+n.obs <- 100 # we fit the four models 
+n.models <- 4
+new.fits <- purrr::map(
+  seq(n.obs), 
+  .f = function(.) .fit.new.obs(model.list, .)
+  )
+# get new training MSEs
+training.MSEs <- purrr::map(
+  seq(n.models),
+  .f = function(.) lapply(seq(n.obs), 
+       function(x) .get.MSE(new.fits, x, .)) %>%
+  do.call("rbind", .)
+)
+# convert list to tibble and merge with df.test.MSEs
+df.MSEs <- training.MSEs %>%
+  do.call("cbind", .) %>%
+  magrittr::set_colnames(model.titles) %>%
+  as.tibble(.) %>%
+  dplyr::mutate(Type = 'training MSE') %>%
+  dplyr::bind_rows(df.test.MSEs) %>%
+  tidyr::gather(Model, MSE, -Type)
+# define order of models (how they should appear in plot)
+df.MSEs$Model <- factor(df.MSEs$Model, 
+  levels=c(model.titles[length(model.titles)], model.titles[1:length(model.titles)-1]))
+# plot all training MSEs and test MSEs 
+ggplot2::ggplot(df.MSEs, 
+                aes(x = factor(Model), y = MSE)) +
   scale_shape_discrete(solid=F) +
-  geom_point(aes(color = Model, shape = MSE.type), size = 5, stroke = 2, alpha = 0.8) +
-  labs(x = 'Number of parameters', y = 'Average MSE', title = '') +
+  geom_point(aes(color = Type), 
+             size = 3, stroke = 1, alpha = 0.05) +
+  geom_boxplot(aes(color=Type), width = 0.5) + 
+  labs(x = 'Model', y = 'MSE', title = '') +
   background_grid(major= "y", colour.major="grey40") +
   scale_y_log10(
     breaks = scales::trans_breaks("log10", function(x) 10^x),
@@ -118,16 +154,15 @@ ggplot2::ggplot(statinfo.tidy, aes(x = factor(k), y = MSE.val, group = MSE.type)
   annotation_logticks(sides = 'lr') +
   theme_book() + 
   panel_border() + 
-  scale_color_brewer(palette = "Dark2")
-
-# TODO: show all MSEs, add boxplots
+  scale_color_brewer(palette = "Set1") +
+  scale_x_discrete(labels = c("Exp.", "Linear", "Quadr.", "Polyn. 15"))
 ```
+
 
 The polynomial of degree 15 has the best _training_ $MSE$ but the worse _test_ $MSE$. This behavior is often called __overfitting__. In the next section we will show that this results from high __model variance__ (error due to __estimation__) and low __bias__ (error due to __approximation__). The linear model performs bad on both data sets. Note that the $MSE$ of the linear model does not change as as much as for $\hat{f}_3$ -- this indicates that the model variance of $\hat{f}_1$ is rather low and that the high $MSE$ results from high bias. The quadratic model performs well on both data sets suggesting a low model variance and a low bias. And indeed, this model was used to generate the data for this example. 
 
-## Error decomposition 
-
-_[work in progress]_
+## Error decomposition
+[work in progress]
 
 Assume we know the real model $f$ that gives rise to some real observations $y$ for values $x$ described by $y = f(x) + \epsilon$, with random noise $\epsilon \sim \mathcal{N}(0, \sigma^2)$.
 
@@ -135,49 +170,30 @@ We are interested in the quality of fit for a given model $\hat{f}$. It can be s
 $$ E \left( y(x_i) - \hat{f}(x_i) \right)^2 = \mathrm{Var}(\hat{f}(x_i)) + \left( \mathrm{Bias} (\hat{f}(x_i)) \right)^2 + \mathrm{Var}(\epsilon)$$
 
 1. **Variance of the fitted model**: $\mathrm{Var}(\hat{f}(x_i)) = E(\hat{f}(x_i)^2) - E(\hat{f}(x_i))^2$
-    * The variance of $\hat{f}(x_i)$ refers to the amount by which model $\hat{f}$ would change, if we estimated it using a different training data set (changes in estimated parameters); in general, more flexible models can result in large changes in $\hat{f}$.
+    * The variance of $\hat{f}(x_i)$ refers to the amount by which model $\hat{f}$ would change, if we estimated it using a different training data set (changes in estimated parameters); in general, more flexible models show higher variance than less flexible models. This error term is also called __error due to estimation__. 
 
 
 ```{r 02-model-var, eval=TRUE, tidy = FALSE, echo = FALSE, fig.show = 'hold', warning = FALSE, fig.cap='Visualization of model variance: The example models were fitted to four different testing data sets.', out.width='50%', fig.asp=0.75, fig.align='left'}
-.fit.test <- function(m, seed, idx){
-  set.seed(seed)
-  test.df <- tibble::tibble(x = seq(20), y = jitter(2 * x ^ 2, amount = 60))
-  # fit different models
-  model <- vector(mode="list", length=3)
-  model[[1]] <-lm(y ~ x,  test.df)
-  model[[2]] <- lm(y ~ x + I(x ^ 2),  test.df)
-  model[[3]] <- lm(y ~ poly(x, 15),  test.df)
-  model[[4]] <- lm(y ~ exp(x),  test.df)
-  return(model)
-}
-
-n.newfits <- 5
-new.fits <- purrr::map(
-  seq(4),
-  .f = function(.) lapply(seq(n.newfits <- 5), function(x) .fit.test(model, x, .))
-  )
-
-colorvec <- rainbow(10)
-
-plot.new.fits <- function(df, model, title, m.idx){
+# Q: Is there a more elegant way to plot multiple fits?
+colorvec <- grDevices::rainbow(10)
+plot.new.fits <- function(df, new.fits, model.titles, idx){
   p <- ggplot2::ggplot(df, aes(x,y)) +
-    geom_point() +
+    geom_point(alpha=0.3) +
     theme_book() +
-    ggtitle(title[m.idx]) +
-    geom_line(data = fortify(new.fits[[2]][[1]][[m.idx]]), aes(x=seq(20), y=.fitted), color = colorvec[1], alpha = 0.8, lwd = 1.2) +
-     geom_line(data = fortify(new.fits[[2]][[2]][[m.idx]]), aes(x=seq(20), y=.fitted), color = colorvec[10], alpha = 0.8, lwd = 1.2) +
-     geom_line(data = fortify(new.fits[[2]][[3]][[m.idx]]), aes(x=seq(20), y=.fitted), color = colorvec[5], alpha = 0.8, lwd = 1.2) +
-     geom_line(data = fortify(new.fits[[2]][[4]][[m.idx]]), aes(x=seq(20), y=.fitted), color = colorvec[8], alpha = 0.8, lwd = 1.2)
+    ggtitle(model.titles[idx]) +
+    geom_line(data = fortify(new.fits[[1]][[idx]]), aes(x=seq(20), y=.fitted), color = colorvec[1], alpha = 0.8, lwd = 1.2) +
+    geom_line(data = fortify(new.fits[[2]][[idx]]), aes(x=seq(20), y=.fitted), color = colorvec[5], alpha = 0.8, lwd = 1.2) +
+    geom_line(data = fortify(new.fits[[3]][[idx]]), aes(x=seq(20), y=.fitted), color = colorvec[8], alpha = 0.8, lwd = 1.2) +
+    geom_line(data = fortify(new.fits[[4]][[idx]]), aes(x=seq(20), y=.fitted), color = colorvec[10], alpha = 0.8, lwd = 1.2)
 }
-
 plots <- purrr::map(
-  seq(4),
-  .f = function(.) show(plot.new.fits(train.data, model, model.title, .))
+  seq(n.models),
+  .f = function(.) methods::show(plot.new.fits(train.data, new.fits, model.titles, .))
 )
 ```
 
 2. **Squared bias of the fitted model**: $\left( \mathrm{Bias} (\hat{f}(x_i)) \right)^2 = \left( E\left(\hat{f}(x_i)\right) - f(x_i) \right)^2$
-    * The squared bias of $\hat{f}(x_i)$.
+    * The squared bias of $\hat{f}(x_i)$ is also called __error due to approximation__. More flexible models result in lower bias (but higher variance), while less flexible models result in high bias (and lower variance).
 
 3. **Variance due to measurement noise**: $\mathrm{Var}(\epsilon) = \sigma^2$
-    * The variance of the error terms, which is irreducible.
+    * The variance of the error terms, which is irreducible.n

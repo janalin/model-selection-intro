@@ -4,14 +4,14 @@ The goal of model selection is to identify the _best_ model among a set of compe
 
 ```{r 01-example-models, echo=FALSE, warning=FALSE, fig.show ='hold', fig.cap='Example problem: which model is the best model?', out.width='50%', fig.asp=.75, fig.align='left'}
 # Issue in formula(model): accepts only 'x' and 'y' as variable names -> restricts colnaming
-plot.model <- function(train.data, model, model.title, idx) {
+plot.model <- function(train.data, model, model.titles, idx) {
   SSE <- round(sum(model[[idx]]$residuals ^ 2), 0)
   k <- length(model[[idx]]$coefficients)
   p <- ggplot2::ggplot(
     train.data, aes(x, y)) +
     geom_point() +
     theme_book() +
-    ggtitle(model.title[idx]) +
+    ggtitle(model.titles[idx]) +
     geom_smooth(formula = formula(model[[idx]]), method = "lm", se = FALSE) +
     ylim(0, 800) + 
     annotate(
@@ -24,23 +24,23 @@ plot.model <- function(train.data, model, model.title, idx) {
 set.seed(123)
 train.data <- tibble::tibble(x = seq(20), y = jitter(2 * x ^ 2, amount = 60))
 
-model.title <- c("Linear model", "Quadratic model", "Polynomial of degree 15", "Exponential model")
+model.titles <- c("Linear model", "Quadratic model", "Polynomial of degree 15", "Exponential model")
 
 # init list of models
-model <- vector(mode = "list", length = length(model.title))
+model.list <- vector(mode = "list", length = length(model.titles))
 
 # fit models
-model[[1]] <- lm(y ~ x, train.data) # linear
-model[[2]] <- lm(y ~ x + I(x ^ 2), train.data) # quadratic
-model[[3]] <- lm(y ~ poly(x, 15), train.data) # polynom degree 15
-model[[4]] <- lm(y ~ exp(x), train.data) # exponential
+model.list[[1]] <- lm(y ~ x, train.data) # linear
+model.list[[2]] <- lm(y ~ x + I(x ^ 2), train.data) # quadratic
+model.list[[3]] <- lm(y ~ poly(x, 15), train.data) # polynom degree 15
+model.list[[4]] <- lm(y ~ exp(x), train.data) # exponential
 
 plots <- purrr::map(
   seq(4),
-  .f = function(.) plot.model(train.data, model, model.title, .)
+  .f = function(.) plot.model(train.data, model.list, model.titles, .)
 )
 # do not show console output, only plots
-invisible(lapply(plots, function(x) show(x)))
+invisible(lapply(plots, function(x) methods::show(x)))
 ```
 
 Here, $k$ corresponds to the number of parameters (including the intercept). The sum over all squared residuals is given by $SSE$ (_sum of squared error_):

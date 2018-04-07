@@ -24,6 +24,7 @@
 
 
 
+<meta name="date" content="2018-04-07">
 
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -160,38 +161,38 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div id="the-quality-of-fit-in-regression" class="section level2">
 <h2><span class="header-section-number">2.1</span> The quality of fit in regression</h2>
 <p>Quality of fit means usually how well our model <span class="math inline">\(\hat{f}\)</span> matches the experimental observations <span class="math inline">\(y\)</span>. Or more precisely, how much the predicted response value for a given observation <span class="math inline">\(\hat{f}(x_i) = \hat{y}_i\)</span> is close to the observed response value <span class="math inline">\(y(x_i)\)</span> for that observation <span class="math inline">\(x_i\)</span>. The <span class="math inline">\(SSE\)</span> introduced in the previous section is not applicable because it is sample size dependent: as more observations we have, as higher the <span class="math inline">\(SSE\)</span>. Thus, we need to normalize for the number of observation <span class="math inline">\(n\)</span>. This gives us the most-commonly used measure for the quality of fit in regression analysis – the <em>mean squared error</em> <span class="math inline">\(MSE\)</span>:</p>
-<p><span class="math display">\[MSE = \dfrac{1}{n} \sum_{i = 1}^n \left( y(x_i) - \hat{f}(x_i) \right) ^ 2 = \dfrac{1}{n} SSE \ , \]</span>
+<p><span class="math display">\[MSE = \dfrac{1}{n} SSE = \dfrac{1}{n} \sum_{i = 1}^n \left( y(x_i) - \hat{f}(x_i) \right) ^ 2 = \dfrac{1}{n} \sum_{i = 1}^n \underbrace{ \left(\underbrace{\underbrace{y_i}_{\text{observed}} - \underbrace{\hat{y}_i}_{\text{predicted}}}_{\text{residual } r_i}\right)^2}_{\text{squared error}} \ , \]</span>
 The MSE is the total mean error between our actual observations and model prediction. In the following section, we will see that there are different error sources that contribute to the total error (<span class="math inline">\(SSE\)</span> and <span class="math inline">\(MSE\)</span>).</p>
 </div>
 <div id="simulation-study" class="section level2">
 <h2><span class="header-section-number">2.2</span> Simulation study</h2>
-<p>We perform a simulation study with the 4 example models introduced in the previous section @(intro).</p>
+<p>We perform a simulation study with the four example models introduced in section <a href="intro.html#intro">1</a>.</p>
 <span class="math display">\[\begin{align}
-\hat{f}_1 (x) &amp;= \beta_0 + \beta_1 \ x &amp;\text{(Linear model)} \\
-\hat{f}_2 (x) &amp;= \beta_0 + \beta_1 \ x + \beta_2 \ x^2 &amp;\text{(Quadratic model)} \\
-\hat{f}_3 (x) &amp;= \beta_0 + \beta_1 \ x + \beta_2 \ x^2 + \ldots + \beta_{16} \ x^{15} &amp; \text{(Polynomial of degree 15)} \\
-\hat{f}_4 (x) &amp;= \beta_0 + \beta_1 \ exp(x) &amp; \text{(Exponential model)} \\
+\hat{f}_1 (x) &amp;= \beta_0 + \beta_1 \ x &amp;\text{Polynomial of degree 1 (linear model)} \\
+\hat{f}_2 (x) &amp;= \beta_0 + \beta_1 \ x + \beta_2 \ x^2 &amp;\text{Polynomial of degree 2 (quadratic model)} \\
+\hat{f}_3 (x) &amp;= \beta_0 + \beta_1 \ x + \beta_2 \ x^2 + \ldots + \beta_{16} \ x^{15} &amp; \text{Polynomial of degree 15} \\
+\hat{f}_4 (x) &amp;= \beta_0 + \beta_1 \ exp(x) &amp; \text{Exponential model} \\
 \end{align}\]</span>
-<p>All models share the same vector of independent variables <span class="math inline">\(x\)</span>. The parameter spaces of <span class="math inline">\(\hat{f}_1\)</span> and <span class="math inline">\(\hat{f}_4\)</span> are strict subsets of the parameter space of <span class="math inline">\(\hat{f}_2\)</span>; and the parameter space of <span class="math inline">\(\hat{f}_2\)</span> is a strict subset of <span class="math inline">\(\hat{f}_3\)</span>. But while model <span class="math inline">\(\hat{f}_{3}\)</span> can include models <span class="math inline">\(\hat{f}_{i&lt;3}\)</span> (and <span class="math inline">\(\hat{f}_{2}\)</span> can include <span class="math inline">\(\hat{f}_{1}\)</span>), model <span class="math inline">\(\hat{f}_4\)</span> belongs to a different category. We will see why this is important.</p>
-<p>Assume you have a set of observations <span class="math inline">\(y\)</span> from given by some data-generating process for given values of <span class="math inline">\(x\)</span>. For instance, <span class="math inline">\(x\)</span> might be a set of experimental conditions or a set of patient biomarkers. Then <span class="math inline">\(y\)</span> might correspond to a fluorescence signal under the condition <span class="math inline">\(x\)</span> or a disease outcome in the considered patient population. Note, that you do not observe the full population from which <span class="math inline">\(y\)</span> is drawn but only a sample; performing another experiment under conditions <span class="math inline">\(x\)</span> or collecting more patient samples for the considered patient population corresponds ideally to taking a new random sample from the same population. We try to design our experiments and studies such that we can assume that this is the case, otherwise we cannot use the discussed model selection criteria, because then we cannot assume that the observations come from the same data-generating process and thus can be explained by the same model <span class="math inline">\(\hat{f}\)</span>.</p>
+<p>All models share the same vector of independent variables <span class="math inline">\(x\)</span>. Note, that model <span class="math inline">\(\hat{f}_{3}\)</span> can include models <span class="math inline">\(\hat{f}_{i&lt;3}\)</span> (and <span class="math inline">\(\hat{f}_{2}\)</span> can include <span class="math inline">\(\hat{f}_{1}\)</span>), while model <span class="math inline">\(\hat{f}_4\)</span> belongs to a different category. We will see why this is important.</p>
+<p>Assume you have a set of observations <span class="math inline">\(y\)</span> given by some data-generating process for given values of <span class="math inline">\(x\)</span>. For instance, <span class="math inline">\(x\)</span> might be a set of experimental conditions or a set of patient biomarkers. Then <span class="math inline">\(y\)</span> might correspond to a fluorescence signal under the condition <span class="math inline">\(x\)</span> or a disease outcome in the considered patient population. Note, that you do not observe the full population from which <span class="math inline">\(y\)</span> is drawn but only a sample; performing another experiment under conditions <span class="math inline">\(x\)</span> or collecting more patient samples for the considered patient population corresponds ideally to taking a new random sample from the same population. We try to design our experiments and studies such that we can assume that this is the case, otherwise we cannot use the discussed model selection criteria, because then we cannot assume that the observations come from the same data-generating process and then they can not be explained by the same model <span class="math inline">\(\hat{f}\)</span>.</p>
 <p>We assume there is some <em>real</em> unknown model <span class="math inline">\(f\)</span> that gives rise to our observations <span class="math inline">\(y\)</span>:
 <span class="math display">\[ y =  f(x) + \epsilon, \quad \epsilon \sim \mathcal{N}(0, \sigma^2) \]</span></p>
-<p>If we fit the four models to our available obseravtions <span class="math inline">\(y\)</span>, we get the following quality of fit:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1">get.statinfo &lt;-<span class="st"> </span><span class="cf">function</span>(model, model.title, idx) {</a>
+<p>We fit the four models to our available obseravtions <span class="math inline">\(y\)</span>. The summary statistics is shown in Table below.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1">get.statinfo &lt;-<span class="st"> </span><span class="cf">function</span>(model.list, model.titles, idx) {</a>
 <a class="sourceLine" id="cb1-2" data-line-number="2">  <span class="kw">tibble</span>(</a>
-<a class="sourceLine" id="cb1-3" data-line-number="3">    <span class="dt">Model =</span> model.title[idx],</a>
-<a class="sourceLine" id="cb1-4" data-line-number="4">    <span class="dt">k =</span> <span class="kw">length</span>(model[[idx]]<span class="op">$</span>coefficients),</a>
-<a class="sourceLine" id="cb1-5" data-line-number="5">    <span class="dt">n =</span> <span class="kw">nobs</span>(model[[idx]]),</a>
-<a class="sourceLine" id="cb1-6" data-line-number="6">    <span class="dt">df =</span> <span class="kw">df.residual</span>(model[[idx]]), <span class="co"># n - k</span></a>
-<a class="sourceLine" id="cb1-7" data-line-number="7">    <span class="dt">SSE =</span> <span class="kw">round</span>(<span class="kw">sum</span>(model[[idx]]<span class="op">$</span>residuals <span class="op">^</span><span class="st"> </span><span class="dv">2</span>), <span class="dv">0</span>),</a>
-<a class="sourceLine" id="cb1-8" data-line-number="8">    <span class="dt">MSE =</span> <span class="kw">round</span>((<span class="kw">sum</span>(model[[idx]]<span class="op">$</span>residuals <span class="op">^</span><span class="st"> </span><span class="dv">2</span>)) <span class="op">/</span><span class="st"> </span><span class="kw">nobs</span>(model[[idx]]), <span class="dv">0</span>)</a>
+<a class="sourceLine" id="cb1-3" data-line-number="3">    <span class="dt">Model =</span> model.titles[idx],</a>
+<a class="sourceLine" id="cb1-4" data-line-number="4">    <span class="dt">k =</span> <span class="kw">length</span>(model.list[[idx]]<span class="op">$</span>coefficients),</a>
+<a class="sourceLine" id="cb1-5" data-line-number="5">    <span class="dt">n =</span> <span class="kw">nobs</span>(model.list[[idx]]),</a>
+<a class="sourceLine" id="cb1-6" data-line-number="6">    <span class="dt">df =</span> <span class="kw">df.residual</span>(model.list[[idx]]), <span class="co"># n - k</span></a>
+<a class="sourceLine" id="cb1-7" data-line-number="7">    <span class="dt">SSE =</span> <span class="kw">round</span>(<span class="kw">sum</span>(model.list[[idx]]<span class="op">$</span>residuals <span class="op">^</span><span class="st"> </span><span class="dv">2</span>), <span class="dv">0</span>),</a>
+<a class="sourceLine" id="cb1-8" data-line-number="8">    <span class="dt">MSE =</span> <span class="kw">round</span>((<span class="kw">sum</span>(model.list[[idx]]<span class="op">$</span>residuals <span class="op">^</span><span class="st"> </span><span class="dv">2</span>)) <span class="op">/</span><span class="st"> </span><span class="kw">nobs</span>(model.list[[idx]]), <span class="dv">0</span>)</a>
 <a class="sourceLine" id="cb1-9" data-line-number="9">  )</a>
 <a class="sourceLine" id="cb1-10" data-line-number="10">}</a>
 <a class="sourceLine" id="cb1-11" data-line-number="11"></a>
 <a class="sourceLine" id="cb1-12" data-line-number="12">statinfo &lt;-<span class="st"> </span>purrr<span class="op">::</span><span class="kw">map</span>(</a>
 <a class="sourceLine" id="cb1-13" data-line-number="13">  <span class="kw">seq</span>(<span class="dv">4</span>),</a>
 <a class="sourceLine" id="cb1-14" data-line-number="14">  <span class="dt">.f =</span> <span class="cf">function</span>(.)</a>
-<a class="sourceLine" id="cb1-15" data-line-number="15">    <span class="kw">get.statinfo</span>(model, model.title, .)</a>
+<a class="sourceLine" id="cb1-15" data-line-number="15">    <span class="kw">get.statinfo</span>(model.list, model.titles, .)</a>
 <a class="sourceLine" id="cb1-16" data-line-number="16">) <span class="op">%&gt;%</span></a>
 <a class="sourceLine" id="cb1-17" data-line-number="17"><span class="st">  </span><span class="kw">do.call</span>(<span class="st">&quot;rbind&quot;</span>, .)</a>
 <a class="sourceLine" id="cb1-18" data-line-number="18"></a>
@@ -247,66 +248,130 @@ The MSE is the total mean error between our actual observations and model predic
 </tr>
 </tbody>
 </table>
-<p>The <span class="math inline">\(MSE\)</span> between model and training data is often called <em>training</em> <span class="math inline">\(MSE\)</span>. But to asses the model performance we are usually not interested in the <em>training</em> <span class="math inline">\(MSE\)</span>. Instead, we are interested in how well our model performs on new observations – the <em>test</em> <span class="math inline">\(MSE\)</span>. Let us compute the test <span class="math inline">\(MSE\)</span> of the four example models for 1000 new observations, i.e. 1000 new samples drawn from the same population of observation as the training data set <span class="math inline">\(y\)</span>.</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1">.compute.test.MSE &lt;-<span class="st"> </span><span class="cf">function</span>(model, seed, idx) {</a>
+<p>The <span class="math inline">\(MSE\)</span> between model and training data is often called <em>training</em> <span class="math inline">\(MSE\)</span>. But to asses the model performance we are usually not interested in the <em>training</em> <span class="math inline">\(MSE\)</span>. Instead, we are interested in how well our model performs on new observations – the <em>test</em> <span class="math inline">\(MSE\)</span>. Let us compute the test <span class="math inline">\(MSE\)</span> of the four example models for 100 new observations. Here, a new observation means a new sample drawn from the same population of observations as the training data set <span class="math inline">\(y\)</span>.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1">.compute.test.MSE &lt;-<span class="st"> </span><span class="cf">function</span>(model.list, seed, idx) {</a>
 <a class="sourceLine" id="cb2-2" data-line-number="2">  <span class="kw">set.seed</span>(seed)</a>
 <a class="sourceLine" id="cb2-3" data-line-number="3">  test.data &lt;-<span class="st"> </span>tibble<span class="op">::</span><span class="kw">tibble</span>(<span class="dt">x =</span> <span class="kw">seq</span>(<span class="dv">20</span>), </a>
 <a class="sourceLine" id="cb2-4" data-line-number="4">                              <span class="dt">y =</span> <span class="kw">jitter</span>(<span class="dv">2</span> <span class="op">*</span><span class="st"> </span>x <span class="op">^</span><span class="st"> </span><span class="dv">2</span>, <span class="dt">amount =</span> <span class="dv">60</span>))</a>
-<a class="sourceLine" id="cb2-5" data-line-number="5">  pred.y &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="kw">predict.lm</span>(model[[idx]], test.data))</a>
-<a class="sourceLine" id="cb2-6" data-line-number="6">  test.MSE &lt;-<span class="st"> </span><span class="kw">mean</span>((test.data<span class="op">$</span>y <span class="op">-</span><span class="st"> </span>pred.y) <span class="op">^</span><span class="st"> </span><span class="dv">2</span>)</a>
+<a class="sourceLine" id="cb2-5" data-line-number="5">  pred.y &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="kw">predict.lm</span>(model.list[[idx]], test.data))</a>
+<a class="sourceLine" id="cb2-6" data-line-number="6">  test.MSE &lt;-<span class="st"> </span><span class="kw">round</span>(<span class="kw">mean</span>((test.data<span class="op">$</span>y <span class="op">-</span><span class="st"> </span>pred.y) <span class="op">^</span><span class="st"> </span><span class="dv">2</span>),<span class="dv">0</span>)</a>
 <a class="sourceLine" id="cb2-7" data-line-number="7">  <span class="kw">return</span>(test.MSE)</a>
 <a class="sourceLine" id="cb2-8" data-line-number="8">}</a>
-<a class="sourceLine" id="cb2-9" data-line-number="9"></a>
-<a class="sourceLine" id="cb2-10" data-line-number="10">n.obs &lt;-<span class="st"> </span><span class="dv">1000</span> <span class="co"># number of new observations</span></a>
-<a class="sourceLine" id="cb2-11" data-line-number="11">test.MSE &lt;-<span class="st"> </span>purrr<span class="op">::</span><span class="kw">map</span>(</a>
-<a class="sourceLine" id="cb2-12" data-line-number="12">  <span class="kw">seq</span>(<span class="dv">4</span>),</a>
-<a class="sourceLine" id="cb2-13" data-line-number="13">  <span class="dt">.f =</span> <span class="cf">function</span>(.) <span class="kw">lapply</span>(<span class="kw">seq</span>(n.obs), <span class="cf">function</span>(x) <span class="kw">.compute.test.MSE</span>(model, x, .)) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb2-14" data-line-number="14"><span class="st">      </span><span class="kw">do.call</span>(<span class="st">&quot;rbind&quot;</span>, .)</a>
-<a class="sourceLine" id="cb2-15" data-line-number="15">)</a>
-<a class="sourceLine" id="cb2-16" data-line-number="16"></a>
-<a class="sourceLine" id="cb2-17" data-line-number="17">plot.test.MSE &lt;-<span class="st"> </span><span class="cf">function</span>(test.MSE, model.title, idx) {</a>
-<a class="sourceLine" id="cb2-18" data-line-number="18">  ggplot2<span class="op">::</span><span class="kw">ggplot</span>() <span class="op">+</span></a>
-<a class="sourceLine" id="cb2-19" data-line-number="19"><span class="st">    </span><span class="kw">geom_histogram</span>(</a>
-<a class="sourceLine" id="cb2-20" data-line-number="20">      <span class="kw">aes</span>(<span class="dt">x =</span> test.MSE[[idx]]), <span class="dt">color =</span> <span class="st">&quot;black&quot;</span>, <span class="dt">fill =</span> <span class="st">&quot;white&quot;</span>, <span class="dt">bins =</span> <span class="dv">20</span>) <span class="op">+</span></a>
-<a class="sourceLine" id="cb2-21" data-line-number="21"><span class="st">    </span><span class="kw">theme_book</span>() <span class="op">+</span></a>
-<a class="sourceLine" id="cb2-22" data-line-number="22"><span class="st">    </span><span class="kw">labs</span>(<span class="dt">title =</span> model.title[idx], <span class="dt">x =</span> <span class="st">&quot;Test MSE&quot;</span>, <span class="dt">y =</span> <span class="st">&quot;Frequency&quot;</span>) <span class="op">+</span></a>
-<a class="sourceLine" id="cb2-23" data-line-number="23"><span class="st">    </span><span class="kw">geom_vline</span>(</a>
-<a class="sourceLine" id="cb2-24" data-line-number="24">      <span class="dt">xintercept =</span> <span class="kw">median</span>(test.MSE[[idx]]), <span class="dt">lty =</span> <span class="dv">3</span>, <span class="dt">color =</span> <span class="st">&quot;red&quot;</span>, <span class="dt">lwd =</span> <span class="fl">1.2</span>)</a>
-<a class="sourceLine" id="cb2-25" data-line-number="25">}</a>
-<a class="sourceLine" id="cb2-26" data-line-number="26"></a>
-<a class="sourceLine" id="cb2-27" data-line-number="27">hist.MSE &lt;-<span class="st"> </span>purrr<span class="op">::</span><span class="kw">map</span>(</a>
-<a class="sourceLine" id="cb2-28" data-line-number="28">  <span class="kw">seq</span>(<span class="dv">4</span>),</a>
-<a class="sourceLine" id="cb2-29" data-line-number="29">  <span class="dt">.f =</span> <span class="cf">function</span>(.) <span class="kw">plot.test.MSE</span>(test.MSE, model.title, .)</a>
-<a class="sourceLine" id="cb2-30" data-line-number="30">)</a>
-<a class="sourceLine" id="cb2-31" data-line-number="31"></a>
-<a class="sourceLine" id="cb2-32" data-line-number="32"><span class="kw">invisible</span>(<span class="kw">lapply</span>(hist.MSE, <span class="cf">function</span>(x) <span class="kw">show</span>(x)))</a>
-<a class="sourceLine" id="cb2-33" data-line-number="33"></a>
-<a class="sourceLine" id="cb2-34" data-line-number="34"><span class="co"># </span><span class="al">TODO</span><span class="co">: fit gaussian and estimate sigma**2</span></a></code></pre></div>
+<a class="sourceLine" id="cb2-9" data-line-number="9"><span class="co"># compute new test MSEs</span></a>
+<a class="sourceLine" id="cb2-10" data-line-number="10">n.models &lt;-<span class="st"> </span><span class="dv">4</span></a>
+<a class="sourceLine" id="cb2-11" data-line-number="11">n.obs &lt;-<span class="st"> </span><span class="dv">100</span></a>
+<a class="sourceLine" id="cb2-12" data-line-number="12">test.MSEs &lt;-<span class="st"> </span>purrr<span class="op">::</span><span class="kw">map</span>(</a>
+<a class="sourceLine" id="cb2-13" data-line-number="13">  <span class="kw">seq</span>(n.models),</a>
+<a class="sourceLine" id="cb2-14" data-line-number="14">  <span class="dt">.f =</span> <span class="cf">function</span>(.) <span class="kw">lapply</span>(<span class="kw">seq</span>(n.obs), </a>
+<a class="sourceLine" id="cb2-15" data-line-number="15">       <span class="cf">function</span>(x) <span class="kw">.compute.test.MSE</span>(model.list, x, .)) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb2-16" data-line-number="16"><span class="st">  </span><span class="kw">do.call</span>(<span class="st">&quot;rbind&quot;</span>, .)</a>
+<a class="sourceLine" id="cb2-17" data-line-number="17">)</a>
+<a class="sourceLine" id="cb2-18" data-line-number="18"><span class="co"># convert list to tibble </span></a>
+<a class="sourceLine" id="cb2-19" data-line-number="19">df.test.MSEs &lt;-<span class="st"> </span>test.MSEs <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb2-20" data-line-number="20"><span class="st">  </span><span class="kw">do.call</span>(<span class="st">&quot;cbind&quot;</span>, .) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb2-21" data-line-number="21"><span class="st">  </span>magrittr<span class="op">::</span><span class="kw">set_colnames</span>(model.titles) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb2-22" data-line-number="22"><span class="st">  </span>tibble<span class="op">::</span><span class="kw">as.tibble</span>(.) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb2-23" data-line-number="23"><span class="st">  </span>dplyr<span class="op">::</span><span class="kw">mutate</span>(<span class="dt">Type =</span> <span class="st">&#39;Test MSE&#39;</span>)</a>
+<a class="sourceLine" id="cb2-24" data-line-number="24"><span class="co"># plot results</span></a>
+<a class="sourceLine" id="cb2-25" data-line-number="25">.plot.hist &lt;-<span class="st"> </span><span class="cf">function</span>(df, model.titles, idx.model) {</a>
+<a class="sourceLine" id="cb2-26" data-line-number="26">  ggplot2<span class="op">::</span><span class="kw">ggplot</span>() <span class="op">+</span></a>
+<a class="sourceLine" id="cb2-27" data-line-number="27"><span class="st">    </span><span class="kw">geom_histogram</span>(</a>
+<a class="sourceLine" id="cb2-28" data-line-number="28">      <span class="kw">aes</span>(<span class="dt">x =</span> df[[idx.model]]), <span class="dt">color =</span> <span class="st">&quot;black&quot;</span>, <span class="dt">fill =</span> <span class="st">&quot;white&quot;</span>, <span class="dt">bins =</span> <span class="dv">20</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb2-29" data-line-number="29"><span class="st">    </span><span class="kw">theme_book</span>() <span class="op">+</span></a>
+<a class="sourceLine" id="cb2-30" data-line-number="30"><span class="st">    </span><span class="kw">labs</span>(<span class="dt">title =</span> model.titles[idx.model], <span class="dt">x =</span> df<span class="op">$</span>Type, <span class="dt">y =</span> <span class="st">&quot;Frequency&quot;</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb2-31" data-line-number="31"><span class="st">    </span><span class="kw">geom_vline</span>(</a>
+<a class="sourceLine" id="cb2-32" data-line-number="32">      <span class="dt">xintercept =</span> <span class="kw">median</span>(df[[idx.model]]), <span class="dt">lty =</span> <span class="dv">3</span>, <span class="dt">color =</span> <span class="st">&quot;red&quot;</span>, <span class="dt">lwd =</span> <span class="fl">1.2</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb2-33" data-line-number="33"><span class="st">    </span><span class="kw">ylim</span>(<span class="dv">0</span>, <span class="dv">15</span>)</a>
+<a class="sourceLine" id="cb2-34" data-line-number="34">}</a>
+<a class="sourceLine" id="cb2-35" data-line-number="35">hist.MSEs &lt;-<span class="st"> </span>purrr<span class="op">::</span><span class="kw">map</span>(</a>
+<a class="sourceLine" id="cb2-36" data-line-number="36">  <span class="kw">seq</span>(n.models),</a>
+<a class="sourceLine" id="cb2-37" data-line-number="37">  <span class="dt">.f =</span> <span class="cf">function</span>(.)<span class="kw">.plot.hist</span>(df.test.MSEs, model.titles, .)</a>
+<a class="sourceLine" id="cb2-38" data-line-number="38">)</a>
+<a class="sourceLine" id="cb2-39" data-line-number="39"><span class="co"># show plots</span></a>
+<a class="sourceLine" id="cb2-40" data-line-number="40"><span class="kw">invisible</span>(<span class="kw">lapply</span>(hist.MSEs, <span class="cf">function</span>(x) methods<span class="op">::</span><span class="kw">show</span>(x)))</a></code></pre></div>
+<pre><code>## Warning: Removed 1 rows containing missing values (geom_bar).</code></pre>
 <div class="figure" style="text-align: left"><span id="fig:02-test-MSE"></span>
-<img src="model-selection-intro_files/figure-html4/02-test-MSE-1.png" alt="Comparison of test MSEs for the three example models; computed on 1000 new data sets." width="50%" /><img src="model-selection-intro_files/figure-html4/02-test-MSE-2.png" alt="Comparison of test MSEs for the three example models; computed on 1000 new data sets." width="50%" /><img src="model-selection-intro_files/figure-html4/02-test-MSE-3.png" alt="Comparison of test MSEs for the three example models; computed on 1000 new data sets." width="50%" /><img src="model-selection-intro_files/figure-html4/02-test-MSE-4.png" alt="Comparison of test MSEs for the three example models; computed on 1000 new data sets." width="50%" />
+<img src="model-selection-intro_files/figure-html4/02-test-MSE-1.png" alt="Histogram of test MSEs computed on 100 new observations." width="50%" /><img src="model-selection-intro_files/figure-html4/02-test-MSE-2.png" alt="Histogram of test MSEs computed on 100 new observations." width="50%" /><img src="model-selection-intro_files/figure-html4/02-test-MSE-3.png" alt="Histogram of test MSEs computed on 100 new observations." width="50%" /><img src="model-selection-intro_files/figure-html4/02-test-MSE-4.png" alt="Histogram of test MSEs computed on 100 new observations." width="50%" />
 <p class="caption">
-Figure 2.1: Comparison of test MSEs for the three example models; computed on 1000 new data sets.
+Figure 2.1: Histogram of test MSEs computed on 100 new observations.
 </p>
 </div>
-<p>The dashed red line indicates the median.</p>
-<div class="figure" style="text-align: center"><span id="fig:02-plot-MSEs"></span>
-<img src="model-selection-intro_files/figure-html4/02-plot-MSEs-1.png" alt="Training MSE (triangles) and test MSE (circles) for the four example models." width="100%" />
+<p>Now, let us compute the <strong>training</strong> <span class="math inline">\(MSE\)</span> for 100 new observations and compare it to the <strong>test</strong> <span class="math inline">\(MSE\)</span>.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1">.fit.new.obs &lt;-<span class="st"> </span><span class="cf">function</span>(model.list, seed){</a>
+<a class="sourceLine" id="cb4-2" data-line-number="2">  <span class="kw">set.seed</span>(seed)</a>
+<a class="sourceLine" id="cb4-3" data-line-number="3">  test.data &lt;-<span class="st"> </span>tibble<span class="op">::</span><span class="kw">tibble</span>(<span class="dt">x =</span> <span class="kw">seq</span>(<span class="dv">20</span>), <span class="dt">y =</span> <span class="kw">jitter</span>(<span class="dv">2</span> <span class="op">*</span><span class="st"> </span>x <span class="op">^</span><span class="st"> </span><span class="dv">2</span>, <span class="dt">amount =</span> <span class="dv">60</span>))</a>
+<a class="sourceLine" id="cb4-4" data-line-number="4">  new.fit &lt;-<span class="st"> </span>purrr<span class="op">::</span><span class="kw">map</span>(</a>
+<a class="sourceLine" id="cb4-5" data-line-number="5">    <span class="kw">seq</span>(<span class="kw">length</span>(model.list)),</a>
+<a class="sourceLine" id="cb4-6" data-line-number="6">    <span class="dt">.f =</span> <span class="cf">function</span>(.) <span class="kw">lm</span>(<span class="kw">formula</span>(model.list[[.]]), test.data)</a>
+<a class="sourceLine" id="cb4-7" data-line-number="7">  )</a>
+<a class="sourceLine" id="cb4-8" data-line-number="8">  <span class="kw">return</span>(new.fit)</a>
+<a class="sourceLine" id="cb4-9" data-line-number="9">}</a>
+<a class="sourceLine" id="cb4-10" data-line-number="10">.get.MSE &lt;-<span class="st"> </span><span class="cf">function</span>(list.of.fits, idx.fit, idx.model){</a>
+<a class="sourceLine" id="cb4-11" data-line-number="11">  MSE =<span class="st"> </span></a>
+<a class="sourceLine" id="cb4-12" data-line-number="12"><span class="st">    </span><span class="kw">round</span>((<span class="kw">sum</span>(list.of.fits[[idx.fit]][[idx.model]]<span class="op">$</span>residuals <span class="op">^</span><span class="st"> </span><span class="dv">2</span>)) <span class="op">/</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb4-13" data-line-number="13"><span class="st">    </span><span class="kw">nobs</span>(list.of.fits[[idx.fit]][[idx.model]]), <span class="dv">0</span>)</a>
+<a class="sourceLine" id="cb4-14" data-line-number="14">  <span class="kw">return</span>(MSE)</a>
+<a class="sourceLine" id="cb4-15" data-line-number="15">}</a>
+<a class="sourceLine" id="cb4-16" data-line-number="16"><span class="co"># fit models to new obserations and store in list</span></a>
+<a class="sourceLine" id="cb4-17" data-line-number="17">n.obs &lt;-<span class="st"> </span><span class="dv">100</span> <span class="co"># we fit the four models </span></a>
+<a class="sourceLine" id="cb4-18" data-line-number="18">n.models &lt;-<span class="st"> </span><span class="dv">4</span></a>
+<a class="sourceLine" id="cb4-19" data-line-number="19">new.fits &lt;-<span class="st"> </span>purrr<span class="op">::</span><span class="kw">map</span>(</a>
+<a class="sourceLine" id="cb4-20" data-line-number="20">  <span class="kw">seq</span>(n.obs), </a>
+<a class="sourceLine" id="cb4-21" data-line-number="21">  <span class="dt">.f =</span> <span class="cf">function</span>(.) <span class="kw">.fit.new.obs</span>(model.list, .)</a>
+<a class="sourceLine" id="cb4-22" data-line-number="22">  )</a>
+<a class="sourceLine" id="cb4-23" data-line-number="23"><span class="co"># get new training MSEs</span></a>
+<a class="sourceLine" id="cb4-24" data-line-number="24">training.MSEs &lt;-<span class="st"> </span>purrr<span class="op">::</span><span class="kw">map</span>(</a>
+<a class="sourceLine" id="cb4-25" data-line-number="25">  <span class="kw">seq</span>(n.models),</a>
+<a class="sourceLine" id="cb4-26" data-line-number="26">  <span class="dt">.f =</span> <span class="cf">function</span>(.) <span class="kw">lapply</span>(<span class="kw">seq</span>(n.obs), </a>
+<a class="sourceLine" id="cb4-27" data-line-number="27">       <span class="cf">function</span>(x) <span class="kw">.get.MSE</span>(new.fits, x, .)) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb4-28" data-line-number="28"><span class="st">  </span><span class="kw">do.call</span>(<span class="st">&quot;rbind&quot;</span>, .)</a>
+<a class="sourceLine" id="cb4-29" data-line-number="29">)</a>
+<a class="sourceLine" id="cb4-30" data-line-number="30"><span class="co"># convert list to tibble and merge with df.test.MSEs</span></a>
+<a class="sourceLine" id="cb4-31" data-line-number="31">df.MSEs &lt;-<span class="st"> </span>training.MSEs <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb4-32" data-line-number="32"><span class="st">  </span><span class="kw">do.call</span>(<span class="st">&quot;cbind&quot;</span>, .) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb4-33" data-line-number="33"><span class="st">  </span>magrittr<span class="op">::</span><span class="kw">set_colnames</span>(model.titles) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb4-34" data-line-number="34"><span class="st">  </span><span class="kw">as.tibble</span>(.) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb4-35" data-line-number="35"><span class="st">  </span>dplyr<span class="op">::</span><span class="kw">mutate</span>(<span class="dt">Type =</span> <span class="st">&#39;training MSE&#39;</span>) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb4-36" data-line-number="36"><span class="st">  </span>dplyr<span class="op">::</span><span class="kw">bind_rows</span>(df.test.MSEs) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb4-37" data-line-number="37"><span class="st">  </span>tidyr<span class="op">::</span><span class="kw">gather</span>(Model, MSE, <span class="op">-</span>Type)</a>
+<a class="sourceLine" id="cb4-38" data-line-number="38"><span class="co"># define order of models (how they should appear in plot)</span></a>
+<a class="sourceLine" id="cb4-39" data-line-number="39">df.MSEs<span class="op">$</span>Model &lt;-<span class="st"> </span><span class="kw">factor</span>(df.MSEs<span class="op">$</span>Model, </a>
+<a class="sourceLine" id="cb4-40" data-line-number="40">  <span class="dt">levels=</span><span class="kw">c</span>(model.titles[<span class="kw">length</span>(model.titles)], model.titles[<span class="dv">1</span><span class="op">:</span><span class="kw">length</span>(model.titles)<span class="op">-</span><span class="dv">1</span>]))</a>
+<a class="sourceLine" id="cb4-41" data-line-number="41"><span class="co"># plot all training MSEs and test MSEs </span></a>
+<a class="sourceLine" id="cb4-42" data-line-number="42">ggplot2<span class="op">::</span><span class="kw">ggplot</span>(df.MSEs, </a>
+<a class="sourceLine" id="cb4-43" data-line-number="43">                <span class="kw">aes</span>(<span class="dt">x =</span> <span class="kw">factor</span>(Model), <span class="dt">y =</span> MSE)) <span class="op">+</span></a>
+<a class="sourceLine" id="cb4-44" data-line-number="44"><span class="st">  </span><span class="kw">scale_shape_discrete</span>(<span class="dt">solid=</span>F) <span class="op">+</span></a>
+<a class="sourceLine" id="cb4-45" data-line-number="45"><span class="st">  </span><span class="kw">geom_point</span>(<span class="kw">aes</span>(<span class="dt">color =</span> Type), </a>
+<a class="sourceLine" id="cb4-46" data-line-number="46">             <span class="dt">size =</span> <span class="dv">3</span>, <span class="dt">stroke =</span> <span class="dv">1</span>, <span class="dt">alpha =</span> <span class="fl">0.05</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb4-47" data-line-number="47"><span class="st">  </span><span class="kw">geom_boxplot</span>(<span class="kw">aes</span>(<span class="dt">color=</span>Type), <span class="dt">width =</span> <span class="fl">0.5</span>) <span class="op">+</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb4-48" data-line-number="48"><span class="st">  </span><span class="kw">labs</span>(<span class="dt">x =</span> <span class="st">&#39;Model&#39;</span>, <span class="dt">y =</span> <span class="st">&#39;MSE&#39;</span>, <span class="dt">title =</span> <span class="st">&#39;&#39;</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb4-49" data-line-number="49"><span class="st">  </span><span class="kw">background_grid</span>(<span class="dt">major=</span> <span class="st">&quot;y&quot;</span>, <span class="dt">colour.major=</span><span class="st">&quot;grey40&quot;</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb4-50" data-line-number="50"><span class="st">  </span><span class="kw">scale_y_log10</span>(</a>
+<a class="sourceLine" id="cb4-51" data-line-number="51">    <span class="dt">breaks =</span> scales<span class="op">::</span><span class="kw">trans_breaks</span>(<span class="st">&quot;log10&quot;</span>, <span class="cf">function</span>(x) <span class="dv">10</span><span class="op">^</span>x),</a>
+<a class="sourceLine" id="cb4-52" data-line-number="52">    <span class="dt">labels =</span> scales<span class="op">::</span><span class="kw">trans_format</span>(<span class="st">&quot;log10&quot;</span>, scales<span class="op">::</span><span class="kw">math_format</span>(<span class="dv">10</span><span class="op">^</span>.x))) <span class="op">+</span></a>
+<a class="sourceLine" id="cb4-53" data-line-number="53"><span class="st">  </span><span class="kw">annotation_logticks</span>(<span class="dt">sides =</span> <span class="st">&#39;lr&#39;</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb4-54" data-line-number="54"><span class="st">  </span><span class="kw">theme_book</span>() <span class="op">+</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb4-55" data-line-number="55"><span class="st">  </span><span class="kw">panel_border</span>() <span class="op">+</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb4-56" data-line-number="56"><span class="st">  </span><span class="kw">scale_color_brewer</span>(<span class="dt">palette =</span> <span class="st">&quot;Set1&quot;</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb4-57" data-line-number="57"><span class="st">  </span><span class="kw">scale_x_discrete</span>(<span class="dt">labels =</span> <span class="kw">c</span>(<span class="st">&quot;Exp.&quot;</span>, <span class="st">&quot;Linear&quot;</span>, <span class="st">&quot;Quadr.&quot;</span>, <span class="st">&quot;Polyn. 15&quot;</span>))</a></code></pre></div>
+<div class="figure" style="text-align: left"><span id="fig:02-comparison-MSE"></span>
+<img src="model-selection-intro_files/figure-html4/02-comparison-MSE-1.png" alt="Comparison of training and test MSEs computed on 100 new data sets." width="100%" />
 <p class="caption">
-Figure 2.2: Training MSE (triangles) and test MSE (circles) for the four example models.
+Figure 2.2: Comparison of training and test MSEs computed on 100 new data sets.
 </p>
 </div>
 <p>The polynomial of degree 15 has the best <em>training</em> <span class="math inline">\(MSE\)</span> but the worse <em>test</em> <span class="math inline">\(MSE\)</span>. This behavior is often called <strong>overfitting</strong>. In the next section we will show that this results from high <strong>model variance</strong> (error due to <strong>estimation</strong>) and low <strong>bias</strong> (error due to <strong>approximation</strong>). The linear model performs bad on both data sets. Note that the <span class="math inline">\(MSE\)</span> of the linear model does not change as as much as for <span class="math inline">\(\hat{f}_3\)</span> – this indicates that the model variance of <span class="math inline">\(\hat{f}_1\)</span> is rather low and that the high <span class="math inline">\(MSE\)</span> results from high bias. The quadratic model performs well on both data sets suggesting a low model variance and a low bias. And indeed, this model was used to generate the data for this example.</p>
 </div>
 <div id="error-decomposition" class="section level2">
 <h2><span class="header-section-number">2.3</span> Error decomposition</h2>
-<p><em>[work in progress]</em></p>
+<p>[work in progress]</p>
 <p>Assume we know the real model <span class="math inline">\(f\)</span> that gives rise to some real observations <span class="math inline">\(y\)</span> for values <span class="math inline">\(x\)</span> described by <span class="math inline">\(y = f(x) + \epsilon\)</span>, with random noise <span class="math inline">\(\epsilon \sim \mathcal{N}(0, \sigma^2)\)</span>.</p>
 <p>We are interested in the quality of fit for a given model <span class="math inline">\(\hat{f}\)</span>. It can be shown, that the expected test <span class="math inline">\(MSE\)</span> for <span class="math inline">\(\hat{f}(x_i)\)</span> can always be decomposed into the sum of the following three components:
 <span class="math display">\[ E \left( y(x_i) - \hat{f}(x_i) \right)^2 = \mathrm{Var}(\hat{f}(x_i)) + \left( \mathrm{Bias} (\hat{f}(x_i)) \right)^2 + \mathrm{Var}(\epsilon)\]</span></p>
 <ol style="list-style-type: decimal">
 <li><strong>Variance of the fitted model</strong>: <span class="math inline">\(\mathrm{Var}(\hat{f}(x_i)) = E(\hat{f}(x_i)^2) - E(\hat{f}(x_i))^2\)</span>
 <ul>
-<li>The variance of <span class="math inline">\(\hat{f}(x_i)\)</span> refers to the amount by which model <span class="math inline">\(\hat{f}\)</span> would change, if we estimated it using a different training data set (changes in estimated parameters); in general, more flexible models can result in large changes in <span class="math inline">\(\hat{f}\)</span>.</li>
+<li>The variance of <span class="math inline">\(\hat{f}(x_i)\)</span> refers to the amount by which model <span class="math inline">\(\hat{f}\)</span> would change, if we estimated it using a different training data set (changes in estimated parameters); in general, more flexible models show higher variance than less flexible models. This error term is also called <strong>error due to estimation</strong>.</li>
 </ul></li>
 </ol>
 <div class="figure" style="text-align: left"><span id="fig:02-model-var"></span>
@@ -318,11 +383,11 @@ Figure 2.3: Visualization of model variance: The example models were fitted to f
 <ol start="2" style="list-style-type: decimal">
 <li><strong>Squared bias of the fitted model</strong>: <span class="math inline">\(\left( \mathrm{Bias} (\hat{f}(x_i)) \right)^2 = \left( E\left(\hat{f}(x_i)\right) - f(x_i) \right)^2\)</span>
 <ul>
-<li>The squared bias of <span class="math inline">\(\hat{f}(x_i)\)</span>.</li>
+<li>The squared bias of <span class="math inline">\(\hat{f}(x_i)\)</span> is also called <strong>error due to approximation</strong>. More flexible models result in lower bias (but higher variance), while less flexible models result in high bias (and lower variance).</li>
 </ul></li>
 <li><strong>Variance due to measurement noise</strong>: <span class="math inline">\(\mathrm{Var}(\epsilon) = \sigma^2\)</span>
 <ul>
-<li>The variance of the error terms, which is irreducible.</li>
+<li>The variance of the error terms, which is irreducible.n</li>
 </ul></li>
 </ol>
 

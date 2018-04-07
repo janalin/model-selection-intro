@@ -1,6 +1,6 @@
 ---
 title: "Introduction to Model Selection"
-date: "" 
+date: "`r Sys.Date()`" 
 site: bookdown::bookdown_site
 output: bookdown::gitbook
 documentclass: book
@@ -40,7 +40,8 @@ The current structure of the document is shown below but might change during the
 ```{r 00-setup, include=FALSE}
 packages <- c(
   "bookdown", "knitr", "rmarkdown", "ggplot2", "cowplot",
-  "tibble", "dplyr", "tidyr", "purrr")
+  "tibble", "dplyr", "tidyr", "purrr", "microbenchmark",
+  "magrittr")
 
 # automatically create a bib database for R packages
 knitr::write_bib(c(
@@ -52,26 +53,27 @@ knitr::write_bib(c(
 base::lapply(packages, library, character.only = TRUE)
 
 # define plot theme
-theme_book <- function(legend_pos = "right") {
+theme_book <- function(legend_pos = "right", legend_dir = "vertical") {
   theme(
+    text = element_text(family = "Helvetica"),
     legend.position = legend_pos,
-    legend.direction = "vertical",
-    legend.text = element_text(size = 20),
+    legend.direction = legend_dir,
+    legend.text = element_text(size = 16),
     legend.title = element_blank(),
-    legend.key = element_rect(size = 10),
+    legend.key = element_rect(size = 8),
     legend.key.size = unit(2, "lines"),
     strip.background = element_rect(fill = "white"),
-    strip.text = element_text(size = 20),
+    strip.text = element_text(size = 16),
     axis.line = element_blank(),
-    axis.text = element_text(size = 22),
+    axis.text = element_text(size = 16),
     plot.title = element_text(
-      size = 26, face = "bold",
+      size = 24, face = "bold",
       hjust = 0.1, vjust = 0.2),
     axis.title.x = element_text(
-      size = 24,
+      size = 20,
       margin = margin(t = 20, r = 0, b = 0, l = 0)),
     axis.title.y = element_text(
-      size = 24,
+      size = 20,
       margin = margin(t = 0, r = 20, b = 0, l = 0))
   )
 }
