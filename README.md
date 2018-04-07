@@ -1,14 +1,14 @@
 # Introduction to Model Selection
-_Last Update: March 15, 2017 by JL_
+_Last Update: April 7, 2018 by JL_
 
 _Notes on the concepts behind model selection and commonly used model selection criteria._
 
-This document is under construction and shows only the chapters completed at this time. Corrections and suggestions are very welcome, contact <a href="mailto:jlinnik@ethz.ch">jlinnik@ethz.ch</a> or check the correspondence at the end of the document.
+This document is under construction and shows only the chapters completed at this time. Corrections and suggestions are very welcome, contact <a href="mailto:jlinnik@protonmail.ch">jlinnik@protonmail.ch</a> or check the correspondence at the end of the document.
 
 If you contribute, please add your name in the contributors list below and in the `correspondence.md` file.
 
 #### Contributors (_please add your name if you contribute_)
-* Jana Linnik <a href="mailto:jlinnik@ethz.ch">jlinnik@ethz.ch</a>
+* Jana Linnik <a href="mailto:jlinnik@protonmail.ch">jlinnik@protonmail.ch</a>
 
 ### Prerequisites
 This is a bookdown document. The __bookdown__ package can be installed from CRAN or Github: <a href="https://github.com/rstudio/bookdown">https://github.com/rstudio/bookdown</a>
@@ -27,4 +27,10 @@ Follow the documentation on <a href="https://github.com/rstudio/bookdown/blob/ma
 ```
 sh _build.sh
 ```
+### Publish
+Before you push to git, copy all required files to the home directory by running:
+```
+sh _cp_html.sh
+```
+
 &copy; <a href=http://www.csb.ethz.ch/>CSB group@ETH Zurich</a> -- published under the Creative Commons Attribution 4.0
