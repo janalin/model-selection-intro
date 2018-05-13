@@ -3,7 +3,7 @@ _Last Update: April 7, 2018 by JL_
 
 Published on <a href="https://janalin.github.io/model-selection-intro/">https://janalin.github.io/model-selection-intro/</a>
 
-_Notes on the concepts behind model selection and commonly used model selection criteria._
+#### Notes on the concepts behind model selection and commonly used model selection criteria
 
 This document is under construction and shows only the chapters completed at this time. Corrections and suggestions are very welcome, contact <a href="mailto:jlinnik@protonmail.ch">jlinnik@protonmail.ch</a> or check the correspondence at the end of the document.
 
