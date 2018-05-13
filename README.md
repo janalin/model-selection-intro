@@ -1,6 +1,8 @@
 # Introduction to Model Selection
 _Last Update: April 7, 2018 by JL_
 
+Published on <a href="https://janalin.github.io/model-selection-intro/">https://janalin.github.io/model-selection-intro/</a>
+
 _Notes on the concepts behind model selection and commonly used model selection criteria._
 
 This document is under construction and shows only the chapters completed at this time. Corrections and suggestions are very welcome, contact <a href="mailto:jlinnik@protonmail.ch">jlinnik@protonmail.ch</a> or check the correspondence at the end of the document.
@@ -34,4 +36,4 @@ Before you push to git, copy all required files to the home directory by running
 sh _cp_html.sh
 ```
 
-&copy; <a href=http://www.csb.ethz.ch/>CSB group@ETH Zurich</a> -- published under the Creative Commons Attribution 4.0
+Published under the Creative Commons Attribution 4.0
